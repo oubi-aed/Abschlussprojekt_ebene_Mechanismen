@@ -1,7 +1,11 @@
 class Mechanismus:
+    id_counter = 1
 
     def __init__(self, name, glieder, gelenke):
-        self.id = None
+        self.id = Mechanismus.id_counter
+        Mechanismus.id_counter += 1
+
+        
         self.name = name
         self.glieder = glieder
         self.gelenke = gelenke
