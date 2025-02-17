@@ -1,8 +1,10 @@
 class Gelenk:
+    id_counter = 1
 
     def __init__(self, x, y, ist_statisch):
         self.id_gelenk = Gelenk.id_counter
         Gelenk.id_counter += 1
+        
         self.x = x
         self.y = y
         self.ist_statisch = ist_statisch

@@ -5,7 +5,6 @@ class Glied:
         self.id_glied = Glied.id_counter
         Glied.id_counter += 1
 
-
         self.gelenk1_id = gelenk1_id
         self.gelenk2_id = gelenk2_id
         self.gestell = False

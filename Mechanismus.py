@@ -5,7 +5,6 @@ class Mechanismus:
         self.id = Mechanismus.id_counter
         Mechanismus.id_counter += 1
 
-        
         self.name = name
         self.glieder = glieder
         self.gelenke = gelenke
