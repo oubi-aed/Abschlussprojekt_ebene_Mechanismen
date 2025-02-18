@@ -1,10 +1,16 @@
 from tinydb import TinyDB, Query
-from Gelenk import Gelenk
 
 class Glied:
-    def __init__(self, id: int, start_id: int, ende_id: int, laenge: float):
+    id_counter = 1  # Automatische ID-Vergabe
+
+    def __init__(self, start_id: int, ende_id: int, laenge: float, id: int = None):
         """Ein Glied verbindet zwei Gelenke über deren IDs."""
-        self.id = id
+        if id is None:
+            self.id = Glied.id_counter
+            Glied.id_counter += 1
+        else:
+            self.id = id  # Falls aus TinyDB geladen wird, behalten wir die ID bei
+
         self.start_id = start_id
         self.ende_id = ende_id
         self.laenge = laenge
@@ -20,7 +26,7 @@ class Glied:
         table = db.table("glieder")
         daten = table.get(Query().id == id)
         if daten:
-            return Glied(daten["id"], daten["start_id"], daten["ende_id"], daten["laenge"])
+            return Glied(daten["start_id"], daten["ende_id"], daten["laenge"], id=daten["id"])
         return None
 
     def __repr__(self):
