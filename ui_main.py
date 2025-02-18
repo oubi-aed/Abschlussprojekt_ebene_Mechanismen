@@ -1,7 +1,5 @@
 #to start the Server with git Bash you have to type in: python -m streamlit run ui_main.py
 
-#to start the Server with git Bash you have to type in: python -m streamlit run ui_main.py
-
 import streamlit as st
 from tinydb import TinyDB, Query
 import matplotlib.pyplot as plt
@@ -36,18 +34,18 @@ with eingabe:
     # Button zum Speichern des Gelenks
         gelenk_gespeichert = st.form_submit_button("Gelenk speichern")
         if gelenk_gespeichert:
-            neues_gelenk = Gelenk(x_start, y_start, x_end, y_end, statisch, statisch2)
+            neues_gelenk = Gelenk(x_start, y_start, statisch)
             neues_gelenk.speichern()
             st.write("Gelenk gespeichert")
 
 
-    #Endpunkte definieren
+"""    #Endpunkte definieren
         end1, end2 = st.columns(2)
         with end1:
             x_end = st.text_input("x-Koordinate Ende", "hier Wert eingeben")
         with end2:
             y_end = st.text_input("y-Koordinate Ende", "hier Wert eingeben")
-        statisch2 = st.checkbox("Statisch2", False)
+        statisch2 = st.checkbox("Statisch2", False)"""
 
         
 
