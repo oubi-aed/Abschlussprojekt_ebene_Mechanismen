@@ -3,15 +3,15 @@ from tinydb import TinyDB, Query
 
 
 class Gelenk:
-    
-    
-    
+    id_counter = 1  # Automatische ID-Vergabe
 
-    def __init__(self, x: float, y: float, ist_statisch: bool = False):
-        """Ein Gelenk mit ID, Position und Status (statisch oder beweglich)."""
-        Gelenk.id_counter = 1
-        self.id = Gelenk.id_counter
-        Gelenk.id_counter += 1
+    def __init__(self, x: float, y: float, ist_statisch: bool = False, id: int = None):
+        """Ein Gelenk mit Position und Status (statisch oder beweglich)."""
+        if id is None:
+            self.id = Gelenk.id_counter
+            Gelenk.id_counter += 1
+        else:
+            self.id = id  # Falls aus TinyDB geladen wird, behalten wir die ID bei
 
         self.x = x
         self.y = y
@@ -28,7 +28,7 @@ class Gelenk:
         table = db.table("Gelenke")
         daten = table.get(Query().id == id)
         if daten:
-            return Gelenk(daten["id"], daten["x"], daten["y"], daten["ist_statisch"])
+            return Gelenk(daten["x"], daten["y"], daten["ist_statisch"], id=daten["id"])
         return None
 
     def __repr__(self):
