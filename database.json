@@ -1,1 +1,58 @@
-{"Gelenke": {"1": {"id": 1, "x": "2", "y": "4", "ist_statisch": true}}}
+{
+    "Gelenke": {
+        "1": {
+            "id": 1,
+            "x": "2",
+            "y": "4",
+            "ist_statisch": true
+        }
+    },
+    "mechanismen": {
+        "1": {
+            "id": 1,
+            "name": "Test 9",
+            "gelenke": [],
+            "glieder": [],
+            "antrieb": null,
+            "statik": [],
+            "x": "3",
+            "y": "4",
+            "ist_statisch": true
+        },
+        "2": {
+            "id": 2,
+            "name": "Test 10",
+            "gelenke": [],
+            "glieder": [],
+            "antrieb": null,
+            "statik": [],
+            "x": "3",
+            "y": "4",
+            "ist_statisch": true
+        },
+        "3": {
+            "id": 3,
+            "name": "Test 6",
+            "gelenke": [],
+            "glieder": [],
+            "antrieb": null,
+            "statik": []
+        },
+        "4": {
+            "id": 4,
+            "name": "Test 7",
+            "gelenke": [],
+            "glieder": [],
+            "antrieb": null,
+            "statik": []
+        },
+        "5": {
+            "id": 5,
+            "name": "Test 8",
+            "gelenke": [],
+            "glieder": [],
+            "antrieb": null,
+            "statik": []
+        }
+    }
+}

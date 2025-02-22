@@ -19,7 +19,7 @@ class Gelenk:
 
     def speichern(self, db: TinyDB):
         """Speichert das Gelenk in TinyDB."""
-        table = db.table("Gelenke")
+        table = db.table("mechanismen")
         table.upsert({"id": self.id, "x": self.x, "y": self.y, "ist_statisch": self.ist_statisch}, Query().id == self.id)
 
     @staticmethod

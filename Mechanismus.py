@@ -39,9 +39,8 @@ class Mechanismus:
         else:
             print(f"Fehler: Gelenk {gelenk_id} existiert nicht!")
 
-    def speichern(self):
+    def speichern(self, db: TinyDB):
         """Speichert den Mechanismus in TinyDB."""
-        db = TinyDB("database.json")
         mechanismus_tabelle = db.table("mechanismen")
 
         daten = {

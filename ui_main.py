@@ -4,6 +4,9 @@ import streamlit as st
 from tinydb import TinyDB, Query
 import matplotlib.pyplot as plt
 from Gelenk import Gelenk
+from Mechanismus import Mechanismus
+from Glied import Glied
+
 
 #Initialisierung der Datenbank
 db = TinyDB('database.json')
@@ -15,25 +18,75 @@ st.set_page_config(layout="wide")
 eingabe, ausgabe = st.columns(2)
 
 
-# Initialisieren der Variablen im Session State
+
+
+# Initialisieren der Buttons im Session State
 if 'button_neues_gelenk' not in st.session_state:
     st.session_state.button_neues_gelenk = False
+# Initialisieren der Buttons im Session State
+if 'button_neuer_mechanismus' not in st.session_state:
+    st.session_state.button_neuer_mechanismus = False
+
+
+
+
+
+# Initialisieren der Variablen im Session State   
 if 'x' not in st.session_state:
     st.session_state.x = ""
 if 'y' not in st.session_state:
     st.session_state.y = ""
 if 'statisch' not in st.session_state:
     st.session_state.statisch = False
+if 'name_mechanismus' not in st.session_state:
+    st.session_state.name_mechanismus = ""
+
+
 
 
 
 with eingabe:
     st.header("Eingabe")
-    # Button zum Anzeigen der Eingabefelder für ein neues Gelenk
+
+    # verwaltung der Buttons und auswahlmöglichkeiten
+    if st.button("neuer Mechanismus"):
+        st.session_state.button_neuer_mechanismus = True
+
+
+
+    # Button: neuer Mechanismus
+    if st.session_state.button_neuer_mechanismus:
+        with st.form(key="key_mechanismus"):
+
+            st.session_state.name_mechanismus = st.text_input("Name des Mechanismu", st.session_state.name_mechanismus)
+
+            # Button zum Speichern des Gelenks
+            mechanismus_anlegen = st.form_submit_button("Mechanismus anlegen")
+            if mechanismus_anlegen:
+                neuer_mechanismus = Mechanismus(st.session_state.name_mechanismus)
+                neuer_mechanismus.speichern(db)
+                st.write("Mechanismus angelegt")
+                st.session_state.button_neuer_mechanismus = False
+      
+
+
+
+
+
+    #auswahl_mechanismen = Mechanismus.laden_name(db)
+    auswahl_mechanismen = [m["name"] for m in db.table("mechanismen").all()]
+    aktiver_mechanismus = st.selectbox("Mechanismus auswählen", auswahl_mechanismen)
+
+
+
+
+
+    # Button: neues Gelenk
     if st.button("neues Gelenk"):
         st.session_state.button_neues_gelenk = True
+   
 
-    # Eingabefelder anzeigen, wenn der Button gedrückt wurde
+    # Button: neues Gelenk
     if st.session_state.button_neues_gelenk:
         with st.form(key="key_gelenk"):
             start1, start2 = st.columns(2)
@@ -44,9 +97,6 @@ with eingabe:
                 st.session_state.y = st.text_input("y-Koordinate Start", st.session_state.y)
                 st.session_state.statisch = st.checkbox("Statisch", st.session_state.statisch)
 
-            print("hallo das schaffst du auch noch")
-            print(f"x: {st.session_state.x}")
-
             # Button zum Speichern des Gelenks
             gelenk_gespeichert = st.form_submit_button("Gelenk speichern")
             if gelenk_gespeichert:
@@ -56,6 +106,7 @@ with eingabe:
                 st.session_state.x = ""
                 st.session_state.y = ""
                 st.session_state.statisch = False
+
 
 
 
