@@ -3,8 +3,8 @@ from tinydb import TinyDB, Query
 class Glied:
     id_counter = 1  # Automatische ID-Vergabe
 
-    def __init__(self, start_id: int, ende_id: int, laenge: float, id: int = None):
-        """Ein Glied verbindet zwei Gelenke über deren IDs."""
+    def __init__(self, start_id: int, ende_id: int, ist_kurbel: bool = False, id: int = None):
+        """Ein Glied verbindet zwei Gelenke. Falls es eine Kurbel ist, verbindet es ein statisches und ein dynamisches Gelenk."""
         if id is None:
             self.id = Glied.id_counter
             Glied.id_counter += 1
@@ -13,12 +13,14 @@ class Glied:
 
         self.start_id = start_id
         self.ende_id = ende_id
-        self.laenge = laenge
+        self.ist_kurbel = ist_kurbel  # Falls das Glied eine Kurbel ist (statisch <-> dynamisch)
 
     def speichern(self, db: TinyDB):
         """Speichert das Glied in TinyDB."""
         table = db.table("glieder")
-        table.upsert({"id": self.id, "start_id": self.start_id, "ende_id": self.ende_id, "laenge": self.laenge}, Query().id == self.id)
+        table.upsert({
+            "id": self.id, "start_id": self.start_id, "ende_id": self.ende_id, "ist_kurbel": self.ist_kurbel
+        }, Query().id == self.id)
 
     @staticmethod
     def laden(db: TinyDB, id: int):
@@ -26,8 +28,8 @@ class Glied:
         table = db.table("glieder")
         daten = table.get(Query().id == id)
         if daten:
-            return Glied(daten["start_id"], daten["ende_id"], daten["laenge"], id=daten["id"])
+            return Glied(daten["start_id"], daten["ende_id"], daten["ist_kurbel"], id=daten["id"])
         return None
 
     def __repr__(self):
-        return f"Glied(ID={self.id}, Start={self.start_id}, Ende={self.ende_id}, Länge={self.laenge})"
+        return f"Glied(ID={self.id}, Start={self.start_id}, Ende={self.ende_id}, Kurbel={self.ist_kurbel})"

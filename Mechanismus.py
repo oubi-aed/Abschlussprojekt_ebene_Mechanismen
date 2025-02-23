@@ -24,12 +24,22 @@ class Mechanismus:
         """Fügt ein Glied hinzu."""
         self.glieder.append(glied)
 
-    def set_antrieb(self, gelenk_id: int):
-        """Setzt ein Gelenk als Antrieb."""
-        if any(g.id == gelenk_id for g in self.gelenke):
-            self.antrieb = gelenk_id
-        else:
-            print(f"Fehler: Gelenk {gelenk_id} existiert nicht!")
+    def set_antrieb(self):
+        """Sucht nach einem Gelenk mit ist_antrieb=True und setzt das zugehörige Glied als Kurbel."""
+        antriebsgelenk = next((g for g in self.gelenke if g.ist_antrieb), None)
+
+        if antriebsgelenk is None:
+            print("Fehler: Kein Gelenk ist als Antrieb markiert!")
+            return
+
+        for glied in self.glieder:
+            if glied.start_id == antriebsgelenk.id or glied.ende_id == antriebsgelenk.id:
+                glied.ist_kurbel = True
+                self.antrieb = antriebsgelenk.id
+                print(f"Antrieb gesetzt: Gelenk {antriebsgelenk.id} treibt Glied {glied.id} an.")
+                return
+
+        print("Fehler: Kein passendes Glied für den Antrieb gefunden!")
 
     def set_statik(self, gelenk_id: int):
         """Markiert ein Gelenk als statisch (Fixpunkt)."""
@@ -47,8 +57,8 @@ class Mechanismus:
         daten = {
             "id": self.id,
             "name": self.name,
-            "gelenke": [{"id": g.id, "x": g.x, "y": g.y, "ist_statisch": g.ist_statisch} for g in self.gelenke],
-            "glieder": [{"id": gl.id, "start_id": gl.start_id, "ende_id": gl.ende_id} for gl in self.glieder],
+            "gelenke": [{"id": g.id, "x": g.x, "y": g.y, "ist_statisch": g.ist_statisch, "ist_antrieb": g.ist_antrieb} for g in self.gelenke],
+            "glieder": [{"id": gl.id, "start_id": gl.start_id, "ende_id": gl.ende_id, "ist_kurbel": getattr(gl, 'ist_kurbel', False)} for gl in self.glieder],
             "antrieb": self.antrieb,
             "statik": self.statik,
         }
@@ -67,11 +77,9 @@ class Mechanismus:
             print(f"Fehler: Kein Mechanismus mit ID {mechanismus_id} gefunden!")
             return None
 
-        # Gelenke und Glieder wiederherstellen
-        gelenke = [Gelenk(g["id"], g["x"], g["y"], g["ist_statisch"]) for g in daten["gelenke"]]
-        glieder = [Glied(gl["id"], gl["start_id"], gl["ende_id"]) for gl in daten["glieder"]]
+        gelenke = [Gelenk(g["id"], g["x"], g["y"], g.get("ist_statisch", False), g.get("ist_antrieb", False)) for g in daten["gelenke"]]
+        glieder = [Glied(gl["id"], gl["start_id"], gl["ende_id"], gl.get("ist_kurbel", False)) for gl in daten["glieder"]]
 
-        # Mechanismus erstellen
         mechanismus = Mechanismus(daten["name"], glieder, gelenke)
         mechanismus.antrieb = daten["antrieb"]
         mechanismus.statik = daten["statik"]

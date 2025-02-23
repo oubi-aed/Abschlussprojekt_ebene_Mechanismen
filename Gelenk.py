@@ -1,12 +1,10 @@
 from tinydb import TinyDB, Query
 
-
-
 class Gelenk:
     id_counter = 1  # Automatische ID-Vergabe
 
-    def __init__(self, x: float, y: float, ist_statisch: bool = False, id: int = None):
-        """Ein Gelenk mit Position und Status (statisch oder beweglich)."""
+    def __init__(self, x: float, y: float, ist_statisch: bool = False, ist_antrieb: bool = False, id: int = None):
+        """Ein Gelenk mit Position, Statisch-Status und optionalem Antrieb mit Mittelpunkt."""
         if id is None:
             self.id = Gelenk.id_counter
             Gelenk.id_counter += 1
@@ -16,11 +14,15 @@ class Gelenk:
         self.x = x
         self.y = y
         self.ist_statisch = ist_statisch
+        self.ist_antrieb = ist_antrieb
 
     def speichern(self, db: TinyDB):
         """Speichert das Gelenk in TinyDB."""
         table = db.table("Gelenke")
-        table.upsert({"id": self.id, "x": self.x, "y": self.y, "ist_statisch": self.ist_statisch}, Query().id == self.id)
+        table.upsert({
+            "id": self.id, "x": self.x, "y": self.y, "ist_statisch": self.ist_statisch,
+            "ist_antrieb": self.ist_antrieb
+        }, Query().id == self.id)
 
     @staticmethod
     def laden(db: TinyDB, id: int):
@@ -28,8 +30,8 @@ class Gelenk:
         table = db.table("Gelenke")
         daten = table.get(Query().id == id)
         if daten:
-            return Gelenk(daten["x"], daten["y"], daten["ist_statisch"], id=daten["id"])
+            return Gelenk(daten["x"], daten["y"], daten["ist_statisch"], daten["ist_antrieb"], id=daten["id"])
         return None
 
     def __repr__(self):
-        return f"Gelenk(ID={self.id}, x={self.x}, y={self.y}, Statisch={self.ist_statisch})"
+        return f"Gelenk(ID={self.id}, x={self.x}, y={self.y}, Statisch={self.ist_statisch}, Antrieb={self.ist_antrieb})"
