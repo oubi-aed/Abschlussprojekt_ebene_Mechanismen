@@ -1,30 +1,71 @@
 import numpy as np
-from scipy.optimize import minimize
+import scipy.optimize as opt
 from Mechanismus import Mechanismus
 from Gelenk import Gelenk
-from Glied import Glied
 
 class Simulation:
     def __init__(self, mechanismus: Mechanismus, schritte=100):
-        """Initialisiert die Simulation mit einem Mechanismus und Anzahl der Berechnungsschritte."""
+        """Initialisiert die Simulation."""
         self.mechanismus = mechanismus
         self.schritte = schritte
-        self.winkel_schritte = np.linspace(0, 2*np.pi, schritte)  # 0° bis 360° in Schritten
+        self.winkel_schritte = np.linspace(0, 2 * np.pi, schritte)
+        self.gelenk_positionen = {g.id: np.array([g.x, g.y]) for g in mechanismus.gelenke}
+        self.glied_laengen = self.berechne_gliederlaengen()
+        self.simulationsergebnisse = []
 
-    def fehlerfunktion(self, positionen):
+        # Identifiziere die Kurbel
+        self.kurbel = next((gl for gl in self.mechanismus.glieder if gl.ist_kurbel), None)
+
+        if not self.kurbel:
+            print("Fehler: Keine Kurbel gefunden. Die Simulation kann nicht laufen.")
+            self.valid = False
+        else:
+            self.valid = True
+
+    def berechne_gliederlaengen(self):
+        """Speichert die ursprünglichen Gliederlängen für die Optimierung."""
+        glied_laengen = {}
+        for glied in self.mechanismus.glieder:
+            p1 = self.gelenk_positionen[glied.start_id]
+            p2 = self.gelenk_positionen[glied.ende_id]
+            glied_laengen[glied.id] = np.linalg.norm(p2 - p1)
+        return glied_laengen
+
+    def bewege_kurbel(self, winkel):
+        """Bewegt das Endgelenk der Kurbel entlang einer Kreisbahn."""
+        if not self.kurbel:
+            return
+
+        antriebsgelenk = next((g for g in self.mechanismus.gelenke if g.id == self.mechanismus.antrieb), None)
+        if not antriebsgelenk:
+            print(f"Fehler: Antriebsgelenk {self.mechanismus.antrieb} nicht gefunden")
+            return
+
+        p_statisch = np.array([antriebsgelenk.x, antriebsgelenk.y])
+        r = self.glied_laengen[self.kurbel.id]
+        neue_position = p_statisch + r * np.array([np.cos(winkel), np.sin(winkel)])
+
+        self.gelenk_positionen[self.kurbel.ende_id] = neue_position
+
+    def fehlerfunktion(self, variablen):
         """Berechnet den Gesamtfehler der Gliederlängen."""
         fehler = 0
+        idx = 0
         bewegliche_gelenke = [g for g in self.mechanismus.gelenke if g.id not in self.mechanismus.statik]
 
-        for i, gelenk in enumerate(bewegliche_gelenke):
-            gelenk.x = positionen[2*i]
-            gelenk.y = positionen[2*i + 1]
+        # Aktualisiere Gelenkpositionen
+        for gelenk in bewegliche_gelenke:
+            gelenk.x = variablen[2 * idx]
+            gelenk.y = variablen[2 * idx + 1]
+            self.gelenk_positionen[gelenk.id] = np.array([gelenk.x, gelenk.y])
+            idx += 1
 
+        # Berechne Fehler basierend auf den Längen der Glieder
         for glied in self.mechanismus.glieder:
-            start = next(g for g in self.mechanismus.gelenke if g.id == glied.start_id)
-            ende = next(g for g in self.mechanismus.gelenke if g.id == glied.ende_id)
-            ist_laenge = np.linalg.norm([start.x - ende.x, start.y - ende.y])
-            fehler += (ist_laenge - glied.laenge) ** 2  # Fehlerquadrate aufsummieren
+            start = self.gelenk_positionen[glied.start_id]
+            ende = self.gelenk_positionen[glied.ende_id]
+            ist_laenge = np.linalg.norm(start - ende)
+            fehler += (ist_laenge - self.glied_laengen[glied.id]) ** 2
 
         return fehler
 
@@ -34,33 +75,38 @@ class Simulation:
         bewegliche_gelenke = [g for g in self.mechanismus.gelenke if g.id not in self.mechanismus.statik]
 
         for gelenk in bewegliche_gelenke:
-            initiale_positionen.extend([gelenk.x, gelenk.y])
+            initiale_positionen.extend(self.gelenk_positionen[gelenk.id])
 
-        result = minimize(self.fehlerfunktion, initiale_positionen)
+        ergebnis = opt.minimize(self.fehlerfunktion, initiale_positionen, method='BFGS')
 
-        for i, gelenk in enumerate(bewegliche_gelenke):
-            gelenk.x = result.x[2*i]
-            gelenk.y = result.x[2*i + 1]
+        if ergebnis.success:
+            idx = 0
+            for gelenk in bewegliche_gelenke:
+                self.gelenk_positionen[gelenk.id] = np.array([ergebnis.x[2 * idx], ergebnis.x[2 * idx + 1]])
+                idx += 1
+        else:
+            print("Warnung: Optimierung nicht erfolgreich")
 
-        print(f"Optimierung abgeschlossen, Fehler: {result.fun}")
+    def berechne_kinematik(self, winkel):
+        """Berechnet die Positionen aller Gelenke für einen gegebenen Kurbelwinkel."""
+        if not self.valid:
+            print("Simulation abgebrochen: Keine gültige Kurbel")
+            return {}
 
-    def kinematik(self):
-        """Simuliert die Bewegung des Mechanismus durch Variieren des Antriebswinkels."""
-        ergebnisse = []
+        self.bewege_kurbel(winkel)
+        self.optimierung()
 
-        if self.mechanismus.antrieb is None:
-            print("Kein Antrieb definiert!")
-            return []
+        return self.gelenk_positionen
 
-        antrieb_gelenk = next(g for g in self.mechanismus.gelenke if g.id == self.mechanismus.antrieb)
+    def simuliere_mechanismus(self):
+        """Simuliert eine komplette Umdrehung der Kurbel."""
+        if not self.valid:
+            print("Keine gültige Kurbel – Simulation kann nicht gestartet werden")
+            return
 
-        for theta in self.winkel_schritte:
-            # Berechnung der neuen Position des Antriebsgelenks
-            antrieb_gelenk.x = antrieb_gelenk.radius * np.cos(theta)
-            antrieb_gelenk.y = antrieb_gelenk.radius * np.sin(theta)
+        self.simulationsergebnisse = []
+        for winkel in self.winkel_schritte:
+            positionen = self.berechne_kinematik(winkel)
+            self.simulationsergebnisse.append({k: v.copy() for k, v in positionen.items()})
 
-            # Optimierung der Gelenkpositionen für den neuen Antriebswinkel
-            self.optimierung()
-            ergebnisse.append([(g.x, g.y) for g in self.mechanismus.gelenke])
-
-        return ergebnisse
+        print("Simulation abgeschlossen")

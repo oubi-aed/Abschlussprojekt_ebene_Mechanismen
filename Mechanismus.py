@@ -16,9 +16,15 @@ class Mechanismus:
         self.antrieb = None  # ID des angetriebenen Gelenks
         self.statik = []  # Liste von IDs der fixen Gelenke
 
+        # Automatische Erkennung von Antrieb und statischen Gelenken
+        self.set_antrieb()
+        self.set_statische_gelenke()
+
     def add_gelenk(self, gelenk: Gelenk):
         """Fügt ein Gelenk hinzu."""
         self.gelenke.append(gelenk)
+        self.set_antrieb()  # Falls ein neues Gelenk als Antrieb gesetzt wurde
+        self.set_statische_gelenke()
 
     def add_glied(self, glied: Glied):
         """Fügt ein Glied hinzu."""
@@ -41,13 +47,9 @@ class Mechanismus:
 
         print("Fehler: Kein passendes Glied für den Antrieb gefunden!")
 
-    def set_statik(self, gelenk_id: int):
-        """Markiert ein Gelenk als statisch (Fixpunkt)."""
-        if any(g.id == gelenk_id for g in self.gelenke):
-            if gelenk_id not in self.statik:
-                self.statik.append(gelenk_id)
-        else:
-            print(f"Fehler: Gelenk {gelenk_id} existiert nicht!")
+    def set_statische_gelenke(self):
+        """Markiert ein Gelenke als statisch."""
+        self.statik = [g.id for g in self.gelenke if g.ist_statisch]
 
     def speichern(self):
         """Speichert den Mechanismus in TinyDB."""
@@ -77,8 +79,8 @@ class Mechanismus:
             print(f"Fehler: Kein Mechanismus mit ID {mechanismus_id} gefunden!")
             return None
 
-        gelenke = [Gelenk(g["id"], g["x"], g["y"], g.get("ist_statisch", False), g.get("ist_antrieb", False)) for g in daten["gelenke"]]
-        glieder = [Glied(gl["id"], gl["start_id"], gl["ende_id"], gl.get("ist_kurbel", False)) for gl in daten["glieder"]]
+        gelenke = [Gelenk(g["x"], g["y"], g.get("ist_statisch", False), g.get("ist_antrieb", False), id=g["id"]) for g in daten["gelenke"]]
+        glieder = [Glied(gl["start_id"], gl["ende_id"], gl.get("ist_kurbel", False), id=gl["id"]) for gl in daten["glieder"]]
 
         mechanismus = Mechanismus(daten["name"], glieder, gelenke)
         mechanismus.antrieb = daten["antrieb"]
