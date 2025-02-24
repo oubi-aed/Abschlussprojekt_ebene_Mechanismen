@@ -1,55 +1,79 @@
 {
-    "Gelenke": {
-        "1": {
-            "id": 1,
-            "x": "2",
-            "y": "4",
-            "ist_statisch": true
-        }
-    },
     "mechanismen": {
         "1": {
-            "id": 1,
-            "name": "Test 9",
-            "gelenke": [],
+            "id": 7,
+            "name": "Test 1",
+            "gelenke": [
+                {
+                    "id": true,
+                    "x": 1,
+                    "y": 1.0,
+                    "ist_statisch": 1.0
+                },
+                {
+                    "id": 2,
+                    "x": 1.0,
+                    "y": 1.0,
+                    "ist_statisch": true
+                },
+                {
+                    "id": 3.0,
+                    "x": 3.0,
+                    "y": false,
+                    "ist_statisch": 3
+                },
+                {
+                    "id": 3.0,
+                    "x": true,
+                    "y": 4,
+                    "ist_statisch": 3.0
+                },
+                {
+                    "id": true,
+                    "x": 5,
+                    "y": 5.0,
+                    "ist_statisch": 5.0
+                },
+                {
+                    "id": 6,
+                    "x": 5.0,
+                    "y": 5.0,
+                    "ist_statisch": true
+                }
+            ],
             "glieder": [],
             "antrieb": null,
-            "statik": [],
-            "x": "3",
-            "y": "4",
-            "ist_statisch": true
+            "statik": []
         },
         "2": {
-            "id": 2,
-            "name": "Test 10",
-            "gelenke": [],
-            "glieder": [],
-            "antrieb": null,
-            "statik": [],
-            "x": "3",
-            "y": "4",
-            "ist_statisch": true
-        },
-        "3": {
-            "id": 3,
-            "name": "Test 6",
-            "gelenke": [],
-            "glieder": [],
-            "antrieb": null,
-            "statik": []
-        },
-        "4": {
-            "id": 4,
-            "name": "Test 7",
-            "gelenke": [],
-            "glieder": [],
-            "antrieb": null,
-            "statik": []
-        },
-        "5": {
             "id": 5,
-            "name": "Test 8",
-            "gelenke": [],
+            "name": "Test 2",
+            "gelenke": [
+                {
+                    "id": 1.0,
+                    "x": 1.0,
+                    "y": true,
+                    "ist_statisch": 1
+                },
+                {
+                    "id": 1.0,
+                    "x": true,
+                    "y": 2,
+                    "ist_statisch": 1.0
+                },
+                {
+                    "id": true,
+                    "x": 3,
+                    "y": 3.0,
+                    "ist_statisch": 3.0
+                },
+                {
+                    "id": 4,
+                    "x": 3.0,
+                    "y": 3.0,
+                    "ist_statisch": true
+                }
+            ],
             "glieder": [],
             "antrieb": null,
             "statik": []

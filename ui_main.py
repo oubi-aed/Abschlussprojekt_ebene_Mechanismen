@@ -48,10 +48,9 @@ if 'name_mechanismus' not in st.session_state:
 with eingabe:
     st.header("Eingabe")
 
-    # verwaltung der Buttons und auswahlmöglichkeiten
+     # verwaltung der Buttons und auswahlmöglichkeiten
     if st.button("neuer Mechanismus"):
         st.session_state.button_neuer_mechanismus = True
-
 
 
     # Button: neuer Mechanismus
@@ -63,33 +62,35 @@ with eingabe:
             # Button zum Speichern des Gelenks
             mechanismus_anlegen = st.form_submit_button("Mechanismus anlegen")
             if mechanismus_anlegen:
-                neuer_mechanismus = Mechanismus(st.session_state.name_mechanismus)
-                neuer_mechanismus.speichern(db)
-                st.write("Mechanismus angelegt")
-                st.session_state.button_neuer_mechanismus = False
+                if st.session_state.name_mechanismus:
+                    neuer_mechanismus = Mechanismus(st.session_state.name_mechanismus)
+                    neuer_mechanismus.speichern(db)
+                    st.write("Mechanismus angelegt")
+                    st.session_state.button_neuer_mechanismus = False
+                    st.rerun()
+                else:
+                    st.write("Bitte Namen eingeben")
       
-
-
-
 
 
     #auswahl_mechanismen = Mechanismus.laden_name(db)
     auswahl_mechanismen = [m["name"] for m in db.table("mechanismen").all()]
     aktiver_mechanismus = st.selectbox("Mechanismus auswählen", auswahl_mechanismen)
+    
 
 
-
-
-
-    # Button: neues Gelenk
+    # Button: neues Gelenk (schliesst wieder nach erneutem drücken)
     if st.button("neues Gelenk"):
-        st.session_state.button_neues_gelenk = True
+        st.session_state.button_neues_gelenk = not st.session_state.button_neues_gelenk
+
    
 
     # Button: neues Gelenk
     if st.session_state.button_neues_gelenk:
         with st.form(key="key_gelenk"):
             start1, start2 = st.columns(2)
+
+
 
             with start1:
                 st.session_state.x = st.text_input("x-Koordinate Start", st.session_state.x)
@@ -100,12 +101,21 @@ with eingabe:
             # Button zum Speichern des Gelenks
             gelenk_gespeichert = st.form_submit_button("Gelenk speichern")
             if gelenk_gespeichert:
-                neues_gelenk = Gelenk(st.session_state.x, st.session_state.y, st.session_state.statisch)
-                neues_gelenk.speichern(db)
-                st.write("Gelenk gespeichert")
-                st.session_state.x = ""
-                st.session_state.y = ""
-                st.session_state.statisch = False
+                if aktiver_mechanismus:
+
+                    
+                    neues_gelenk = Gelenk(float(st.session_state.x), float(st.session_state.y), st.session_state.statisch)
+                    print(f"in neues gelenk ist folgendes gespeichert:{neues_gelenk}")
+                    mechanismus = Mechanismus.laden(db, aktiver_mechanismus)
+                    mechanismus.add_gelenk(neues_gelenk)
+                    mechanismus.speichern(db)
+
+                    st.write("Gelenk gespeichert")
+
+                    st.session_state.x = ""
+                    st.session_state.y = ""
+                    st.session_state.statisch = False
+                    st.rerun()
 
 
 
