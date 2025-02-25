@@ -13,6 +13,9 @@ class Simulation:
         self.glied_laengen = self.berechne_gliederlaengen()
         self.simulationsergebnisse = []
 
+        #Gelenkpositionen für die Bahnkurven
+        self.bahnkurve = {g.id: [] for g in self.mechanismus.gelenke if g.id not in self.mechanismus.statik}
+
         # Identifiziere die Kurbel
         self.kurbel = next((gl for gl in self.mechanismus.glieder if gl.ist_kurbel), None)
 
@@ -108,5 +111,19 @@ class Simulation:
         for winkel in self.winkel_schritte:
             positionen = self.berechne_kinematik(winkel)
             self.simulationsergebnisse.append({k: v.copy() for k, v in positionen.items()})
-
+            for gelenk_id, pos in positionen.items():
+                if gelenk_id in self.bahnkurve:
+                    self.bahnkurve[gelenk_id].append(pos)
+            
         print("Simulation abgeschlossen")
+
+    def export_bahnkurve(self, dateinahme="bahnkurve.csv"):
+        """Exportiert die Bahnkurven als csv-Datei."""
+        with open(dateinahme, mode="w", newline="") as file:
+            writer = csv.writer(file)
+            writer.writerow(["Gelenk", "X", "Y"])
+            
+            for gelenk_id, punkte in self.bahnkurve.items():
+                for punkt in punkte:
+                    writer.writerow([gelenk_id, punkt[0], punkt[1]])
+        print(f"Bahnkurven exportiert nach {dateinahme}")
