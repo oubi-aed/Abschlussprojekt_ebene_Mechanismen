@@ -2,46 +2,64 @@
     "mechanismen": {
         "1": {
             "id": 1,
-            "name": "Test 1",
+            "name": "Test simulation",
             "gelenke": [
                 {
                     "id": 1,
-                    "x": 1.0,
-                    "y": 1.0,
-                    "ist_statisch": false,
+                    "x": 0.0,
+                    "y": 0.0,
+                    "ist_statisch": true,
                     "ist_antrieb": false
                 },
                 {
                     "id": 2,
-                    "x": 2.0,
-                    "y": 2.0,
+                    "x": 10.0,
+                    "y": 10.0,
                     "ist_statisch": false,
+                    "ist_antrieb": false
+                },
+                {
+                    "id": 3,
+                    "x": 15.0,
+                    "y": 15.0,
+                    "ist_statisch": false,
+                    "ist_antrieb": false
+                },
+                {
+                    "id": 4,
+                    "x": 0.0,
+                    "y": 20.0,
+                    "ist_statisch": true,
                     "ist_antrieb": false
                 }
             ],
-            "glieder": [],
+            "glieder": [
+                {
+                    "id": 1,
+                    "start_id": 1,
+                    "ende_id": 2,
+                    "ist_kurbel": false
+                },
+                {
+                    "id": 2,
+                    "start_id": 2,
+                    "ende_id": 3,
+                    "ist_kurbel": false
+                },
+                {
+                    "id": 3,
+                    "start_id": 3,
+                    "ende_id": 4,
+                    "ist_kurbel": false
+                }
+            ],
             "antrieb": null,
             "statik": []
         },
         "2": {
             "id": 2,
             "name": "Test 2",
-            "gelenke": [
-                {
-                    "id": 3,
-                    "x": 11.0,
-                    "y": 11.0,
-                    "ist_statisch": false,
-                    "ist_antrieb": false
-                },
-                {
-                    "id": 4,
-                    "x": 22.0,
-                    "y": 22.0,
-                    "ist_statisch": false,
-                    "ist_antrieb": false
-                }
-            ],
+            "gelenke": [],
             "glieder": [],
             "antrieb": null,
             "statik": []
@@ -50,31 +68,51 @@
     "Gelenke": {
         "1": {
             "id": 1,
-            "x": 1.0,
-            "y": 1.0,
-            "ist_statisch": false,
+            "x": 0.0,
+            "y": 0.0,
+            "ist_statisch": true,
             "ist_antrieb": false
         },
         "2": {
             "id": 2,
-            "x": 2.0,
-            "y": 2.0,
+            "x": 10.0,
+            "y": 10.0,
             "ist_statisch": false,
             "ist_antrieb": false
         },
         "3": {
             "id": 3,
-            "x": 11.0,
-            "y": 11.0,
+            "x": 15.0,
+            "y": 15.0,
             "ist_statisch": false,
             "ist_antrieb": false
         },
         "4": {
             "id": 4,
-            "x": 22.0,
-            "y": 22.0,
-            "ist_statisch": false,
+            "x": 0.0,
+            "y": 20.0,
+            "ist_statisch": true,
             "ist_antrieb": false
+        }
+    },
+    "glieder": {
+        "1": {
+            "id": 1,
+            "start_id": 1,
+            "ende_id": 2,
+            "ist_kurbel": false
+        },
+        "2": {
+            "id": 2,
+            "start_id": 2,
+            "ende_id": 3,
+            "ist_kurbel": false
+        },
+        "3": {
+            "id": 3,
+            "start_id": 3,
+            "ende_id": 4,
+            "ist_kurbel": false
         }
     }
 }
