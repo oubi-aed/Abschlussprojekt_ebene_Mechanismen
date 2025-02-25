@@ -162,13 +162,13 @@ with eingabe:
     # Glieder-Eingabe
     if st.session_state.button_neues_glied:
         with st.form(key="key_glied"):
-            if len(st.session_state.gelenke) > 1:
-                start, end = st.columns(2)
-                with start:
-                    start_id = st.selectbox("Startgelenk", [g["id"] for g in st.session_state.gelenke])
-                with end:
-                    ende_id = st.selectbox("Endgelenk", [g["id"] for g in st.session_state.gelenke])
-                    
+            
+            start, end = st.columns(2)
+            with start:
+                start_id = st.selectbox("Startgelenk", [g["id"] for g in st.session_state.gelenke])
+            with end:
+                ende_id = st.selectbox("Endgelenk", [g["id"] for g in st.session_state.gelenke])
+                
             #Button zum Speichern des Glieds
             glied_gespeichert = st.form_submit_button("Glied speichern")    
             if glied_gespeichert:
@@ -180,16 +180,23 @@ with eingabe:
                             st.session_state.glieder.append(neues_glied)
                             st.success("Glied gespeichert")
                             st.rerun()
-            else:
-                st.write("Bitte mindestens zwei Gelenke anlegen")
+
 
             
 
 
     # Simulation starten
     st.subheader("Simulation starten")
-    if st.session_state.mechanismus:
-        if st.button("Mechanismus simulieren"):
+    if st.button("Mechanismus simulieren"):
+
+        print(f"der Typ der gelenke ist: {type(st.session_state.gelenke)}")
+        print(f"Gelenke = {st.session_state.gelenke}")
+        print(f"der Typ der glieder ist: {type(st.session_state.glieder)}")
+        print(f"Glieder = {st.session_state.glieder}")
+
+        
+        st.session_state.mechanismus = Mechanismus(st.session_state.aktiver_mechanismus, st.session_state.glieder, st.session_state.gelenke)
+        if st.session_state.mechanismus:
             sim = Simulation(st.session_state.mechanismus)
             sim.simuliere_mechanismus()
             st.session_state.simulationsergebnisse = sim.simulationsergebnisse
