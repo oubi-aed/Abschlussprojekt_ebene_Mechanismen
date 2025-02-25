@@ -16,13 +16,24 @@ class Gelenk:
         self.ist_statisch = ist_statisch
         self.ist_antrieb = ist_antrieb
 
-    def speichern(self, db: TinyDB):
+    def speichern(self, db: TinyDB, mechanismus_name: str):
         """Speichert das Gelenk in TinyDB."""
-        table = db.table("Gelenke")
-        table.upsert({
+        table_gelenke = db.table("Gelenke")
+        table_mechanismen = db.table("mechanismen")
+
+        table_gelenke.upsert({
             "id": self.id, "x": self.x, "y": self.y, "ist_statisch": self.ist_statisch,
             "ist_antrieb": self.ist_antrieb
         }, Query().id == self.id)
+
+        mechanismus = table_mechanismen.get(Query().name == mechanismus_name) 
+        if mechanismus:
+            mechanismus["gelenke"].append ({
+                "id": self.id, "x": self.x, "y": self.y,
+                "ist_statisch": self.ist_statisch, "ist_antrieb": self.ist_antrieb
+            })
+            table_mechanismen.update(mechanismus, Query().name == mechanismus_name)
+
 
     @staticmethod
     def laden(db: TinyDB, id: int):

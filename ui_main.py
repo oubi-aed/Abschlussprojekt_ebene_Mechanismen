@@ -36,6 +36,8 @@ if 'graph_limits' not in st.session_state:
     st.session_state.graph_limits = None  # Speichert die Skalierung
 if 'button_neuer_mechanismus' not in st.session_state:
     st.session_state.button_neuer_mechanismus = False
+if "letzter_mechanismus" not in st.session_state:
+    st.session_state.letzter_mechanismus = None
 
 
 if 'x' not in st.session_state:
@@ -62,7 +64,7 @@ with eingabe:
     if st.session_state.button_neuer_mechanismus:
         with st.form(key="key_mechanismus"):
 
-            st.session_state.name_mechanismus = st.text_input("Name des Mechanismu", st.session_state.name_mechanismus)
+            st.session_state.name_mechanismus = st.text_input("Name des Mechanismus", st.session_state.name_mechanismus)
 
             # Button zum Speichern des Mechanismus
             mechanismus_anlegen = st.form_submit_button("Mechanismus anlegen")
@@ -70,12 +72,10 @@ with eingabe:
                 if st.session_state.name_mechanismus:
                     neuer_mechanismus = Mechanismus(st.session_state.name_mechanismus, st.session_state.glieder, st.session_state.gelenke)
                     neuer_mechanismus.speichern(db)
-
-
-                    st.session_state.mechanismus = neuer_mechanismus
-
-
                     st.write(f"Mechanismus: {st.session_state.name_mechanismus} angelegt")
+
+                    st.session_state.gelenke = []
+                    st.session_state.glieder = []
                     st.session_state.button_neuer_mechanismus = False
                     st.rerun()
                 else:
@@ -84,6 +84,18 @@ with eingabe:
     # Auswahl der Mechanismen
     auswahl_mechanismen = [m["name"] for m in db.table("mechanismen").all()]
     aktiver_mechanismus = st.selectbox("Mechanismus auswählen", auswahl_mechanismen)
+
+    if aktiver_mechanismus != st.session_state.letzter_mechanismus:
+        st.session_state.letzter_mechanismus = aktiver_mechanismus
+        st.session_state.gelenke = [] 
+        st.session_state.glieder = []
+        st.session_state.ist_antrieb = False
+        st.session_state.statisch = False
+        st.rerun()
+
+
+
+
     button1, button2 = st.columns(2)
 
     with button1:
@@ -101,7 +113,7 @@ with eingabe:
     
 
 
-   
+   # Gelenk-Eingabe
     if st.session_state.button_neues_gelenk:
         with st.form(key="key_gelenk"):
             start1, start2 = st.columns(2)
@@ -120,12 +132,10 @@ with eingabe:
                     if st.session_state.x and st.session_state.y:
                         try:
                             neues_gelenk = Gelenk(float(st.session_state.x), float(st.session_state.y), st.session_state.statisch)
-                            neues_gelenk.speichern(db)
+                            neues_gelenk.speichern(db, aktiver_mechanismus)
                             st.session_state.gelenke.append(neues_gelenk)
                             st.success("Gelenk gespeichert")
-                            st.session_state.x = ""
-                            st.session_state.y = ""
-                            st.session_state.statisch = False
+                            st.session_state.gelenke = []
                             st.rerun()
                         except ValueError:
                             st.error("Bitte gültige Koordinaten eingeben")
@@ -150,6 +160,8 @@ with eingabe:
                         neues_glied.speichern(db)
                         st.session_state.glieder.append(neues_glied)
                         st.success("Glied gespeichert")
+                        st.session_state.glieder = []
+                        st.rerun()
             else:
                 st.write("Bitte mindestens zwei Gelenke anlegen")
 
