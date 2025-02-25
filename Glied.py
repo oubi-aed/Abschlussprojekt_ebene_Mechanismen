@@ -15,12 +15,22 @@ class Glied:
         self.ende_id = ende_id
         self.ist_kurbel = ist_kurbel  # Falls das Glied eine Kurbel ist (statisch <-> dynamisch)
 
-    def speichern(self, db: TinyDB):
+    def speichern(self, db: TinyDB, mechanismus_name: str):
         """Speichert das Glied in TinyDB."""
         table = db.table("glieder")
+        table_mechanismen = db.table("mechanismen")
         table.upsert({
             "id": self.id, "start_id": self.start_id, "ende_id": self.ende_id, "ist_kurbel": self.ist_kurbel
         }, Query().id == self.id)
+
+        mechanismus = table_mechanismen.get(Query().name == mechanismus_name) 
+        if mechanismus:
+            mechanismus["glieder"].append ({
+                "id": self.id, "start_id": self.start_id, "ende_id": self.ende_id, "ist_kurbel": self.ist_kurbel
+            })
+            table_mechanismen.update(mechanismus, Query().name == mechanismus_name)
+
+
 
     @staticmethod
     def laden(db: TinyDB, id: int):
