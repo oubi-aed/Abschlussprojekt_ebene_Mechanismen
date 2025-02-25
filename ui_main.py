@@ -149,7 +149,7 @@ with eingabe:
                 if st.session_state.aktiver_mechanismus:
                     if st.session_state.x and st.session_state.y:
                         try:
-                            neues_gelenk = Gelenk(float(st.session_state.x), float(st.session_state.y), st.session_state.statisch)
+                            neues_gelenk = Gelenk(float(st.session_state.x), float(st.session_state.y), st.session_state.statisch, st.session_state.ist_antrieb)
                             neues_gelenk.speichern(db, st.session_state.aktiver_mechanismus)
                             st.session_state.gelenke.append(neues_gelenk)
                             st.success("Gelenk gespeichert")
@@ -162,6 +162,12 @@ with eingabe:
     # Glieder-Eingabe
     if st.session_state.button_neues_glied:
         with st.form(key="key_glied"):
+            st.session_state.gelenke = []
+            st.session_state.glieder = []
+            mechanismus_daten = db.table("mechanismen").get(where('name') == st.session_state.aktiver_mechanismus)
+            if mechanismus_daten:
+                st.session_state.gelenke = mechanismus_daten["gelenke"]
+                st.session_state.glieder = mechanismus_daten["glieder"]
             
             start, end = st.columns(2)
             with start:
@@ -189,10 +195,11 @@ with eingabe:
     st.subheader("Simulation starten")
     if st.button("Mechanismus simulieren"):
 
-        print(f"der Typ der gelenke ist: {type(st.session_state.gelenke)}")
-        print(f"Gelenke = {st.session_state.gelenke}")
-        print(f"der Typ der glieder ist: {type(st.session_state.glieder)}")
-        print(f"Glieder = {st.session_state.glieder}")
+        mechanismus_daten = db.table("mechanismen").get(where('name') == st.session_state.aktiver_mechanismus)
+        if mechanismus_daten:
+            st.session_state.gelenke = [Gelenk(**g) for g in mechanismus_daten["gelenke"]]
+            st.session_state.glieder = [Glied(**g) for g in mechanismus_daten["glieder"]]
+
 
         
         st.session_state.mechanismus = Mechanismus(st.session_state.aktiver_mechanismus, st.session_state.glieder, st.session_state.gelenke)
