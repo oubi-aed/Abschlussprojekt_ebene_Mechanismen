@@ -51,9 +51,8 @@ class Mechanismus:
         """Markiert ein Gelenke als statisch."""
         self.statik = [g.id for g in self.gelenke if g.ist_statisch]
 
-    def speichern(self):
+    def speichern(self, db: TinyDB):
         """Speichert den Mechanismus in TinyDB."""
-        db = TinyDB("database.json")
         mechanismus_tabelle = db.table("mechanismen")
 
         daten = {
