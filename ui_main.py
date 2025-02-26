@@ -4,6 +4,7 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
 import time
+import pandas as pd
 from tinydb import TinyDB, where
 from Gelenk import Gelenk
 from Glied import Glied
@@ -104,13 +105,9 @@ with eingabe:
         st.session_state.glieder = []
         mechanismus_daten = db.table("mechanismen").get(where('name') == st.session_state.aktiver_mechanismus)
         if mechanismus_daten:
-            st.session_state.gelenke = mechanismus_daten["gelenke"]
-            st.session_state.glieder = mechanismus_daten["glieder"]
+            st.session_state.gelenke = [Gelenk(**g) for g in mechanismus_daten["gelenke"]]
+            st.session_state.glieder = [Glied(**g) for g in mechanismus_daten["glieder"]]
         st.session_state.letzter_mechanismus = st.session_state.aktiver_mechanismus
-
-
-
-
 
 
 
@@ -159,21 +156,18 @@ with eingabe:
 
 
 
+
+
     # Glieder-Eingabe
     if st.session_state.button_neues_glied:
         with st.form(key="key_glied"):
-            st.session_state.gelenke = []
-            st.session_state.glieder = []
-            mechanismus_daten = db.table("mechanismen").get(where('name') == st.session_state.aktiver_mechanismus)
-            if mechanismus_daten:
-                st.session_state.gelenke = mechanismus_daten["gelenke"]
-                st.session_state.glieder = mechanismus_daten["glieder"]
+            
             
             start, end = st.columns(2)
             with start:
-                start_id = st.selectbox("Startgelenk", [g["id"] for g in st.session_state.gelenke])
+                start_id = st.selectbox("Startgelenk", [g.id for g in st.session_state.gelenke])
             with end:
-                ende_id = st.selectbox("Endgelenk", [g["id"] for g in st.session_state.gelenke])
+                ende_id = st.selectbox("Endgelenk", [g.id for g in st.session_state.gelenke])
                 
             #Button zum Speichern des Glieds
             glied_gespeichert = st.form_submit_button("Glied speichern")    
@@ -187,7 +181,9 @@ with eingabe:
                             st.success("Glied gespeichert")
                             st.rerun()
 
+    
 
+    
             
 
 
@@ -195,10 +191,7 @@ with eingabe:
     st.subheader("Simulation starten")
     if st.button("Mechanismus simulieren"):
 
-        mechanismus_daten = db.table("mechanismen").get(where('name') == st.session_state.aktiver_mechanismus)
-        if mechanismus_daten:
-            st.session_state.gelenke = [Gelenk(**g) for g in mechanismus_daten["gelenke"]]
-            st.session_state.glieder = [Glied(**g) for g in mechanismus_daten["glieder"]]
+        
 
 
         
@@ -218,6 +211,18 @@ with eingabe:
                 y_min, y_max = min(all_y) - 1, max(all_y) + 1
                 st.session_state.graph_limits = (x_min, x_max, y_min, y_max)
 
+    # Erstellen einer Tabelle für die Gelenke
+    if "gelenke" in st.session_state and st.session_state.gelenke:
+        gelenke_df = pd.DataFrame([[g.id, g.x, g.y,g.ist_statisch, g.ist_antrieb] for g in st.session_state.gelenke], columns=["ID", "X", "Y", "Statisch", "Antrieb"])
+        st.subheader("Gelenke (NumPy):")
+        st.dataframe(gelenke_df)
+
+    # Erstellen einer Tabelle für die Glieder
+    if "glieder" in st.session_state and st.session_state.glieder:
+        glieder_df = pd.DataFrame([[i+1, g.start_id, g.ende_id] for i, g in enumerate(st.session_state.glieder)], columns=["ID", "Startgelenk", "Endgelenk"])
+        st.subheader("Glieder (NumPy):")
+        st.dataframe(glieder_df)
+
 
 
 
@@ -230,12 +235,17 @@ with eingabe:
 with ausgabe:
     st.header("Animation der Simulation")
 
+    x_min, x_max, y_min, y_max = st.session_state.graph_limits or (-10, 10, -10, 10)
+
+    fig, ax = plt.subplots()
+    ax.set_xlabel("X-Achse")
+    ax.set_ylabel("Y-Achse")
+
     #Falls eine Simulation existiert, starte die Animation
     if st.session_state.simulationsergebnisse:
         plot_container = st.empty()  #Platzhalter für die Animation
         
-        x_min, x_max, y_min, y_max = st.session_state.graph_limits or (-10, 10, -10, 10)
-
+    
         for frame in range(len(st.session_state.simulationsergebnisse)):
             fig, ax = plt.subplots()
             ax.set_xlabel("X-Achse")
