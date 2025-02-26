@@ -216,7 +216,11 @@ with eingabe:
             sim.simuliere_mechanismus()
             sim.export_bahnkurve()
             st.session_state.simulationsergebnisse = sim.simulationsergebnisse
+            st.session_state.bahnkurve = sim.bahnkurve
             st.success("Simulation abgeschlossen!")
+            
+            
+            
 
             # Skalierung berechnen & fixieren
             all_x = [g.x for g in st.session_state.mechanismus.gelenke]
@@ -226,7 +230,7 @@ with eingabe:
                 x_min, x_max = min(all_x) - 40, max(all_x) + 40
                 y_min, y_max = min(all_y) - 40, max(all_y) + 40
                 st.session_state.graph_limits = (x_min, x_max, y_min, y_max)
-
+    
     # Download-Button für Bahnkurven CSV
     bahnkurven_datei = "bahnkurve.csv"
 
@@ -371,6 +375,14 @@ with ausgabe:
                 p1 = positionen[glied.start_id]
                 p2 = positionen[glied.ende_id]
                 ax.plot([p1[0], p2[0]], [p1[1], p2[1]], color="black")
+            
+            #Bahnkurven zeichnen
+            if "bahnkurve" in st.session_state:  
+                for gelenk_id, punkte in st.session_state.bahnkurve.items():
+                    if len(punkte) > 1:
+                        bahn_x = [p[0] for p in punkte]
+                        bahn_y = [p[1] for p in punkte]
+                        ax.plot(bahn_x, bahn_y, linestyle="dashed", color="blue", alpha=0.5)
 
             plot_container.pyplot(fig)  #Animation aktualisieren
             time.sleep(0)  #Kleine Pause für Animationseffekt
