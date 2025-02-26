@@ -240,6 +240,9 @@ with eingabe:
             )
 
 
+
+
+
     # Erstellen einer Tabelle für die Gelenke
     if "gelenke" in st.session_state and st.session_state.gelenke:
         gelenke_df = pd.DataFrame([[g.id, g.x, g.y, g.ist_statisch, g.ist_antrieb] for g in st.session_state.gelenke], 
@@ -276,9 +279,30 @@ with eingabe:
 
     #interaktive Tabelle für Glieder
     if "glieder" in st.session_state and st.session_state.glieder:
-        glieder_df = pd.DataFrame([[i+1, g.start_id, g.ende_id] for i, g in enumerate(st.session_state.glieder)], columns=["ID", "Startgelenk", "Endgelenk"])
-        st.subheader("Glieder (NumPy):")
-        st.dataframe(glieder_df)
+        glieder_df = pd.DataFrame([[i+1, g.start_id, g.ende_id] for i, g in enumerate(st.session_state.glieder)], 
+            columns=["ID", "Startgelenk", "Endgelenk"])
+    else:
+        glieder_df = pd.DataFrame(columns=["ID", "Startgelenk", "Endgelenk"])
+
+    st.subheader("Glieder bearbeiten:")
+    edited_glieder = st.data_editor(glieder_df, num_rows="dynamic", key="glieder_editor")
+
+    if st.button("Änderungen speichern (Glieder)"):
+        if not edited_glieder.empty:
+            neue_glieder = []
+            for i, row in edited_glieder.iterrows():
+                start_id = int(row["Startgelenk"])
+                ende_id = int(row["Endgelenk"]) 
+                neues_glied = Glied(start_id, ende_id)
+                neue_glieder.append(neues_glied)
+
+            st.session_state.glieder = neue_glieder 
+            if st.session_state.aktiver_mechanismus:
+                db.table("mechanismen").update(
+                    {"glieder": [g.__dict__ for g in neue_glieder]},
+                    where("name") == st.session_state.aktiver_mechanismus
+                )
+            st.success("Glied-Daten gespeichert!")
 
 
 
