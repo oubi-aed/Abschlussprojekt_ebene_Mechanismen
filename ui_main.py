@@ -43,6 +43,8 @@ if "letzter_mechanismus" not in st.session_state:
     st.session_state.letzter_mechanismus = None
 if "aktiver_mechanismus" not in st.session_state:
     st.session_state.aktiver_mechanismus = None
+if "simulation_start" not in st.session_state:
+    st.session_state.simulation_start = True
 
 
 if 'x' not in st.session_state:
@@ -213,6 +215,7 @@ with eingabe:
     st.subheader("Simulation starten")
     if st.button("Mechanismus simulieren"):
 
+        st.session_state.simulation_start = True
         st.session_state.mechanismus = Mechanismus(st.session_state.aktiver_mechanismus, db, st.session_state.glieder, st.session_state.gelenke)
         if st.session_state.mechanismus:
             sim = Simulation(st.session_state.mechanismus)
@@ -333,12 +336,16 @@ with eingabe:
 with ausgabe:
     st.header("Animation der Simulation")
 
+    if st.button("Simulation beenden"):
+        st.session_state.simulation_start = False
+        st.rerun()
+   
     x_min, x_max, y_min, y_max = st.session_state.graph_limits or (-10, 10, -10, 10)
     fig, ax = plt.subplots()
     ax.set_xlabel("X-Achse")
     ax.set_ylabel("Y-Achse")
 
-    if not st.session_state.simulationsergebnisse:                  
+    if not st.session_state.simulationsergebnisse or st.session_state.simulation_start == False:                  
         if "gelenke" in st.session_state and st.session_state.gelenke:
             for gelenk in st.session_state.gelenke:
                 if gelenk.ist_antrieb == False and gelenk.ist_statisch == False:
@@ -359,10 +366,13 @@ with ausgabe:
                     [start_gelenk.y, ende_gelenk.y], 
                     color="black", linewidth=2)
 
-        st.pyplot(fig)   
+        st.pyplot(fig)  
+
+
+
 
     #Falls eine Simulation existiert, starte die Animation
-    if st.session_state.simulationsergebnisse:
+    if st.session_state.simulationsergebnisse and st.session_state.simulation_start:
         plot_container = st.empty()  #Platzhalter für die Animation
         
     
