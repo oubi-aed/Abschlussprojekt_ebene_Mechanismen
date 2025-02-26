@@ -338,6 +338,10 @@ with ausgabe:
 
     if st.button("Simulation beenden"):
         st.session_state.simulation_start = False
+        mechanismus_daten = db.table("mechanismen").get(where('name') == st.session_state.aktiver_mechanismus)
+        if mechanismus_daten:
+            st.session_state.gelenke = [Gelenk(**g) for g in mechanismus_daten["gelenke"]]
+            st.session_state.glieder = [Glied(**g) for g in mechanismus_daten["glieder"]]
         st.rerun()
    
     x_min, x_max, y_min, y_max = st.session_state.graph_limits or (-10, 10, -10, 10)
