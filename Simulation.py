@@ -5,6 +5,7 @@ from Mechanismus import Mechanismus
 from Gelenk import Gelenk
 import matplotlib.pyplot as plt
 import imageio
+import streamlit as st
 
 class Simulation:
     def __init__(self, mechanismus: Mechanismus, schritte=100):
@@ -18,6 +19,8 @@ class Simulation:
 
         #Gelenkpositionen für die Bahnkurven
         self.bahnkurve = {g.id: [] for g in self.mechanismus.gelenke if g.id not in self.mechanismus.statik}
+
+        self.laengenfehler = {glied.id: [] for glied in self.mechanismus.glieder}
 
         # Identifiziere die Kurbel
         self.kurbel = next((gl for gl in self.mechanismus.glieder if gl.ist_kurbel), None)
@@ -73,7 +76,9 @@ class Simulation:
             start = self.gelenk_positionen[glied.start_id]
             ende = self.gelenk_positionen[glied.ende_id]
             ist_laenge = np.linalg.norm(start - ende)
-            fehler += (ist_laenge - self.glied_laengen[glied.id]) ** 2
+            fehler_glied = abs(ist_laenge - self.glied_laengen[glied.id])
+            self.laengenfehler[glied.id].append(fehler_glied)
+            fehler += fehler_glied ** 2
 
         return fehler
 
@@ -119,7 +124,12 @@ class Simulation:
             for gelenk_id, pos in positionen.items():
                 if gelenk_id in self.bahnkurve:
                     self.bahnkurve[gelenk_id].append(pos)
-            
+        
+        for glied_id in self.laengenfehler:
+            self.laengenfehler[glied_id] = self.laengenfehler[glied_id][:self.schritte]
+        st.session_state.laengenfehler = self.laengenfehler
+        st.session_state.winkel_schritte = np.degrees(self.winkel_schritte)
+
         print("Simulation abgeschlossen")
 
     def export_bahnkurve(self, dateinahme="bahnkurve.csv"):

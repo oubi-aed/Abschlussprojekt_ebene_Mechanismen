@@ -417,6 +417,24 @@ with ausgabe:
             time.sleep(0)  #Kleine Pause für Animationseffekt
         
 
+    st.header("Visualisierung der Längen-Fehler aller Glieder als Funktion des Winkels θ")
+
+    # Prüfe, ob Simulationsergebnisse vorhanden sind
+    if "laengenfehler" in st.session_state and "winkel_schritte" in st.session_state:
+        fig, ax = plt.subplots()
+        ax.set_xlabel("Winkel θ (Grad)")
+        ax.set_ylabel("Längenfehler")
+        ax.set_title("Längenfehler aller Glieder über den Winkel")
+
+        # Zeichne für jedes Glied eine Linie
+        for glied_id, fehlerwerte in st.session_state.laengenfehler.items():
+            ax.plot(st.session_state.winkel_schritte, fehlerwerte, label=f"Glied {glied_id}")
+
+        ax.legend()
+        st.pyplot(fig)
+    else:
+        st.warning("Keine Längenfehler verfügbar. Führe zuerst eine Simulation durch.")
+
 
 st.write("Session State:")
 st.session_state
