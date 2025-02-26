@@ -3,6 +3,8 @@ import numpy as np
 import scipy.optimize as opt
 from Mechanismus import Mechanismus
 from Gelenk import Gelenk
+import matplotlib.pyplot as plt
+import imageio
 
 class Simulation:
     def __init__(self, mechanismus: Mechanismus, schritte=100):
@@ -130,3 +132,41 @@ class Simulation:
                 for punkt in punkte:
                     writer.writerow([gelenk_id, punkt[0], punkt[1]])
         print(f"Bahnkurven exportiert nach {dateinahme}")
+
+    def export_gif(self, limits, dateiname="Gif.gif"):
+        """Exportiert den gesamten Mechanismus als GIF."""
+        bilder = []
+
+        # Durchlaufe alle Simulationsschritte
+        for schritt in range(len(self.simulationsergebnisse)):
+            fig, ax = plt.subplots()
+            ax.set_xlim(-10, 10)
+            ax.set_ylim(-10, 10)
+            ax.set_title("Mechanismus-Simulation")
+
+            positionen = self.simulationsergebnisse[schritt]
+
+            #setzen der axenlimits
+            if limits:
+                x_min, x_max, y_min, y_max = limits
+                ax.set_xlim(x_min, x_max)
+                ax.set_ylim(y_min, y_max)
+            else:
+                ax.set_xlim(-10, 10) 
+                ax.set_ylim(-10, 10)
+
+
+            for glied in self.mechanismus.glieder:
+                start = positionen[glied.start_id]
+                ende = positionen[glied.ende_id]
+                ax.plot([start[0], ende[0]], [start[1], ende[1]], "ro-", markersize=5, linewidth=2)
+
+            fig.canvas.draw()
+            bild = np.array(fig.canvas.renderer.buffer_rgba())
+            bilder.append(bild)
+
+            plt.close(fig)
+
+        if bilder:
+            imageio.mimsave(dateiname, bilder, duration=0.1)
+            print(f"Mechanismus-GIF exportiert nach {dateiname}")
