@@ -51,7 +51,7 @@ class Mechanismus:
         """Markiert ein Gelenke als statisch."""
         self.statik = [g.id for g in self.gelenke if g.ist_statisch]
 
-    def speichern(self, db: TinyDB):
+    def speichern(self, db: TinyDB, name: str):
         """Speichert den Mechanismus in TinyDB."""
         mechanismus_tabelle = db.table("mechanismen")
 
@@ -64,7 +64,7 @@ class Mechanismus:
             "statik": self.statik,
         }
 
-        mechanismus_tabelle.upsert(daten, Query().id == self.id)
+        mechanismus_tabelle.upsert(daten, Query().name == self.name)
         print(f"Mechanismus '{self.name}' gespeichert.")
 
     @staticmethod

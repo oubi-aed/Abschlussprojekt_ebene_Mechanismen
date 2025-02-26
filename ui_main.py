@@ -82,7 +82,7 @@ with eingabe:
                 if st.session_state.name_mechanismus:
                     if st.session_state.name_mechanismus not in auswahl_mechanismen:
                         neuer_mechanismus = Mechanismus(st.session_state.name_mechanismus, st.session_state.glieder, st.session_state.gelenke)
-                        neuer_mechanismus.speichern(db)
+                        neuer_mechanismus.speichern(db, st.session_state.name_mechanismus)
                         st.write(f"Mechanismus: {st.session_state.name_mechanismus} angelegt")
                         st.session_state.button_neuer_mechanismus = False
                         st.rerun()
