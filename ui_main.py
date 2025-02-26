@@ -242,11 +242,39 @@ with eingabe:
 
     # Erstellen einer Tabelle für die Gelenke
     if "gelenke" in st.session_state and st.session_state.gelenke:
-        gelenke_df = pd.DataFrame([[g.id, g.x, g.y,g.ist_statisch, g.ist_antrieb] for g in st.session_state.gelenke], columns=["ID", "X", "Y", "Statisch", "Antrieb"])
-        st.subheader("Gelenke (NumPy):")
-        st.dataframe(gelenke_df)
+        gelenke_df = pd.DataFrame([[g.id, g.x, g.y, g.ist_statisch, g.ist_antrieb] for g in st.session_state.gelenke], 
+            columns=["ID", "X", "Y", "Statisch", "Antrieb"])
+    else:
+    # Leere Tabelle, wenn keine Gelenke existieren
+        gelenke_df = pd.DataFrame(columns=["ID", "X", "Y", "Statisch", "Antrieb"])
 
-    # Erstellen einer Tabelle für die Glieder
+    # Immer eine bearbeitbare Tabelle anzeigen
+    st.subheader("Gelenke bearbeiten:")
+    edited_gelenke = st.data_editor(gelenke_df, num_rows="dynamic", key="gelenke_editor")
+
+    # Änderungen speichern
+    if st.button("Änderungen speichern"):
+        if not edited_gelenke.empty:
+            for i, row in edited_gelenke.iterrows():
+                if i < len(st.session_state.gelenke):  # Bestehendes Gelenk aktualisieren
+                    st.session_state.gelenke[i].x = row["X"]
+                    st.session_state.gelenke[i].y = row["Y"]
+                    st.session_state.gelenke[i].ist_statisch = row["Statisch"]
+                    st.session_state.gelenke[i].ist_antrieb = row["Antrieb"]
+                else:  # Neues Gelenk hinzufügen
+                    neues_gelenk = Gelenk(float(row["X"]), float(row["Y"]), row["Statisch"], row["Antrieb"])
+                    st.session_state.gelenke.append(neues_gelenk)
+
+            # Datenbank aktualisieren
+            if st.session_state.aktiver_mechanismus:
+                db.table("mechanismen").update({"gelenke": [g.__dict__ for g in st.session_state.gelenke]}, 
+                    where("name") == st.session_state.aktiver_mechanismus)
+            st.success("Gelenk-Daten gespeichert!")
+
+
+
+
+    #interaktive Tabelle für Glieder
     if "glieder" in st.session_state and st.session_state.glieder:
         glieder_df = pd.DataFrame([[i+1, g.start_id, g.ende_id] for i, g in enumerate(st.session_state.glieder)], columns=["ID", "Startgelenk", "Endgelenk"])
         st.subheader("Glieder (NumPy):")
@@ -269,6 +297,7 @@ with ausgabe:
     fig, ax = plt.subplots()
     ax.set_xlabel("X-Achse")
     ax.set_ylabel("Y-Achse")
+
     if not st.session_state.simulationsergebnisse:                  
         if "gelenke" in st.session_state and st.session_state.gelenke:
             for gelenk in st.session_state.gelenke:
@@ -285,8 +314,8 @@ with ausgabe:
                 start_gelenk = next(g for g in st.session_state.gelenke if g.id == glied.start_id)
                 ende_gelenk = next(g for g in st.session_state.gelenke if g.id == glied.ende_id)
 
-            # Linie zwischen den Gelenken zeichnen
-            ax.plot([start_gelenk.x, ende_gelenk.x], 
+                # Linie zwischen den Gelenken zeichnen
+                ax.plot([start_gelenk.x, ende_gelenk.x], 
                     [start_gelenk.y, ende_gelenk.y], 
                     color="black", linewidth=2)
 
