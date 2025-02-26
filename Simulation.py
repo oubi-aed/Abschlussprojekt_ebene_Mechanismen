@@ -1,3 +1,4 @@
+import csv
 import numpy as np
 import scipy.optimize as opt
 from Mechanismus import Mechanismus
@@ -25,8 +26,10 @@ class Simulation:
         else:
             self.valid = True
 
+
     def berechne_gliederlaengen(self):
         """Speichert die ursprünglichen Gliederlängen für die Optimierung."""
+                    
         glied_laengen = {}
         for glied in self.mechanismus.glieder:
             p1 = self.gelenk_positionen[glied.start_id]

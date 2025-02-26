@@ -1,5 +1,7 @@
 #to start the Server with git Bash you have to type in: python -m streamlit run ui_main.py
 
+import os
+import csv
 import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
@@ -81,8 +83,8 @@ with eingabe:
             if mechanismus_anlegen:
                 if st.session_state.name_mechanismus:
                     if st.session_state.name_mechanismus not in auswahl_mechanismen:
-                        neuer_mechanismus = Mechanismus(st.session_state.name_mechanismus, st.session_state.glieder, st.session_state.gelenke)
-                        neuer_mechanismus.speichern(db)
+                        neuer_mechanismus = Mechanismus(st.session_state.name_mechanismus, db, st.session_state.glieder, st.session_state.gelenke)
+                        neuer_mechanismus.speichern()
                         st.write(f"Mechanismus: {st.session_state.name_mechanismus} angelegt")
                         st.session_state.button_neuer_mechanismus = False
                         st.rerun()
@@ -98,16 +100,20 @@ with eingabe:
         index_letzter_mechanismus = 0
     st.session_state.aktiver_mechanismus = st.selectbox("Mechanismus auswählen", auswahl_mechanismen, index_letzter_mechanismus)
 
-# Auswahl der Mechanismen
+    # Auswahl der Mechanismen
     if st.session_state.aktiver_mechanismus != st.session_state.letzter_mechanismus:
-        
         st.session_state.gelenke = []
         st.session_state.glieder = []
+        
         mechanismus_daten = db.table("mechanismen").get(where('name') == st.session_state.aktiver_mechanismus)
+        
         if mechanismus_daten:
             st.session_state.gelenke = [Gelenk(**g) for g in mechanismus_daten["gelenke"]]
             st.session_state.glieder = [Glied(**g) for g in mechanismus_daten["glieder"]]
+        
         st.session_state.letzter_mechanismus = st.session_state.aktiver_mechanismus
+
+
 
 
 
@@ -128,7 +134,7 @@ with eingabe:
     
 
 
-   # Gelenk-Eingabe
+    # Gelenk-Eingabe
     if st.session_state.button_neues_gelenk:
         with st.form(key="key_gelenk"):
             start1, start2 = st.columns(2)
@@ -144,15 +150,21 @@ with eingabe:
             gelenk_gespeichert = st.form_submit_button("Gelenk speichern")
             if gelenk_gespeichert:
                 if st.session_state.aktiver_mechanismus:
-                    if st.session_state.x and st.session_state.y:
-                        try:
-                            neues_gelenk = Gelenk(float(st.session_state.x), float(st.session_state.y), st.session_state.statisch, st.session_state.ist_antrieb)
-                            neues_gelenk.speichern(db, st.session_state.aktiver_mechanismus)
+                    try:
+                        neues_gelenk = Gelenk(float(st.session_state.x), float(st.session_state.y), st.session_state.statisch, st.session_state.ist_antrieb)
+                        neues_gelenk.speichern(db)  # Gelenk speichern
+
+                        # Mechanismus laden und Gelenk hinzufügen
+                        mechanismus = Mechanismus.laden(st.session_state.aktiver_mechanismus, db)
+                        if mechanismus:
+                            mechanismus.add_gelenk(neues_gelenk)
                             st.session_state.gelenke.append(neues_gelenk)
                             st.success("Gelenk gespeichert")
-                            st.rerun()
-                        except ValueError:
-                            st.error("Bitte gültige Koordinaten eingeben")
+                            st.rerun()  
+                    except ValueError:
+                        st.error("Bitte gültige Koordinaten eingeben")
+
+
 
 
 
@@ -173,13 +185,20 @@ with eingabe:
             glied_gespeichert = st.form_submit_button("Glied speichern")    
             if glied_gespeichert:
                 if st.session_state.aktiver_mechanismus:
-                    if start_id and ende_id:
-                        if start_id != ende_id:
-                            neues_glied = Glied(start_id, ende_id)
-                            neues_glied.speichern(db, st.session_state.aktiver_mechanismus)
+                    if start_id != ende_id:
+                        neues_glied = Glied(start_id, ende_id)
+                        neues_glied.speichern(db)  # Glied speichern
+
+                        # Mechanismus laden und Glied hinzufügen
+                        mechanismus = Mechanismus.laden(st.session_state.aktiver_mechanismus, db)
+                        if mechanismus:
+                            mechanismus.add_glied(neues_glied)
                             st.session_state.glieder.append(neues_glied)
                             st.success("Glied gespeichert")
-                            st.rerun()
+                            st.rerun()  
+
+
+
 
     
 
@@ -191,18 +210,15 @@ with eingabe:
     st.subheader("Simulation starten")
     if st.button("Mechanismus simulieren"):
 
-        
-
-
-        
-        st.session_state.mechanismus = Mechanismus(st.session_state.aktiver_mechanismus, st.session_state.glieder, st.session_state.gelenke)
+        st.session_state.mechanismus = Mechanismus(st.session_state.aktiver_mechanismus, db, st.session_state.glieder, st.session_state.gelenke)
         if st.session_state.mechanismus:
             sim = Simulation(st.session_state.mechanismus)
             sim.simuliere_mechanismus()
+            sim.export_bahnkurve()
             st.session_state.simulationsergebnisse = sim.simulationsergebnisse
             st.success("Simulation abgeschlossen!")
 
-            #Skalierung berechnen & fixieren
+            # Skalierung berechnen & fixieren
             all_x = [g.x for g in st.session_state.mechanismus.gelenke]
             all_y = [g.y for g in st.session_state.mechanismus.gelenke]
 
@@ -210,6 +226,19 @@ with eingabe:
                 x_min, x_max = min(all_x) - 1, max(all_x) + 1
                 y_min, y_max = min(all_y) - 1, max(all_y) + 1
                 st.session_state.graph_limits = (x_min, x_max, y_min, y_max)
+
+    # Download-Button für Bahnkurven CSV
+    bahnkurven_datei = "bahnkurve.csv"
+
+    if os.path.exists(bahnkurven_datei):
+        with open(bahnkurven_datei, "rb") as file:
+            st.download_button(
+                label="📥 Bahnkurven herunterladen",
+                data=file,
+                file_name="bahnkurve.csv",
+                mime="text/csv"
+            )
+
 
     # Erstellen einer Tabelle für die Gelenke
     if "gelenke" in st.session_state and st.session_state.gelenke:
@@ -222,6 +251,7 @@ with eingabe:
         glieder_df = pd.DataFrame([[i+1, g.start_id, g.ende_id] for i, g in enumerate(st.session_state.glieder)], columns=["ID", "Startgelenk", "Endgelenk"])
         st.subheader("Glieder (NumPy):")
         st.dataframe(glieder_df)
+
 
 
 
@@ -290,7 +320,7 @@ with ausgabe:
                 ax.plot([p1[0], p2[0]], [p1[1], p2[1]], color="black")
 
             plot_container.pyplot(fig)  #Animation aktualisieren
-            time.sleep(0.01)  #Kleine Pause für Animationseffekt
+            time.sleep(0)  #Kleine Pause für Animationseffekt
         
 
 
