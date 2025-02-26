@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time
 import pandas as pd
+import imageio
 from tinydb import TinyDB, where
 from Gelenk import Gelenk
 from Glied import Glied
@@ -207,8 +208,8 @@ with eingabe:
 
 
     # Simulation starten
-    st.subheader("Simulation starten")
-    if st.button("Mechanismus simulieren"):
+    mechanismus_simulation_start = st.button("Mechanismus simulieren")
+    if mechanismus_simulation_start:
 
         st.session_state.mechanismus = Mechanismus(st.session_state.aktiver_mechanismus, db, st.session_state.glieder, st.session_state.gelenke)
         if st.session_state.mechanismus:
@@ -227,6 +228,8 @@ with eingabe:
                 y_min, y_max = min(all_y) - 40, max(all_y) + 40
                 st.session_state.graph_limits = (x_min, x_max, y_min, y_max)
 
+
+
     # Download-Button für Bahnkurven CSV
     bahnkurven_datei = "bahnkurve.csv"
 
@@ -240,6 +243,49 @@ with eingabe:
             )
 
 
+    if mechanismus_simulation_start:
+        gif_datei = "animation.gif"
+        frames = []
+
+        for frame in range(len(st.session_state.simulationsergebnisse)):
+            fig, ax = plt.subplots()
+            ax.set_xlabel("X-Achse")
+            ax.set_ylabel("Y-Achse")
+
+            # Fixierte Achsen-Skalierung
+            ax.set_xlim(x_min, x_max)
+            ax.set_ylim(y_min, y_max)
+
+            positionen = st.session_state.simulationsergebnisse[frame]
+
+            # Gelenke zeichnen
+            for gelenk_id, pos in positionen.items():
+                ax.scatter(pos[0], pos[1], color="red" if gelenk_id in st.session_state.mechanismus.statik else "blue")
+                ax.text(pos[0], pos[1], f"{gelenk_id}", fontsize=12, ha='right')
+
+            # Glieder zeichnen
+            for glied in st.session_state.mechanismus.glieder:
+                p1 = positionen[glied.start_id]
+                p2 = positionen[glied.ende_id]
+                ax.plot([p1[0], p2[0]], [p1[1], p2[1]], color="black")
+
+            # Speichere das Frame als Bild in der Liste
+            fig.canvas.draw()
+            image = np.array(fig.canvas.renderer.buffer_rgba())
+            frames.append(image)
+            plt.close(fig)  # Schließe die Figur, um Speicher zu sparen
+
+        # Speichere alle Frames als GIF
+        imageio.mimsave(gif_datei, frames, duration=0.1)
+
+        # Download-Button für das GIF
+        with open(gif_datei, "rb") as file:
+            st.download_button(
+                label="GIF herunterladen",
+                data=file,
+                file_name=gif_datei,
+                mime="image/gif"
+            )
 
 
 
@@ -349,8 +395,10 @@ with ausgabe:
     if st.session_state.simulationsergebnisse:
         plot_container = st.empty()  #Platzhalter für die Animation
         
+        
     
         for frame in range(len(st.session_state.simulationsergebnisse)):
+            
             fig, ax = plt.subplots()
             ax.set_xlabel("X-Achse")
             ax.set_ylabel("Y-Achse")
@@ -374,7 +422,7 @@ with ausgabe:
 
             plot_container.pyplot(fig)  #Animation aktualisieren
             time.sleep(0)  #Kleine Pause für Animationseffekt
-        
+
 
 
 st.write("Session State:")
