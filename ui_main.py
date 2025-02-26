@@ -211,18 +211,68 @@ with eingabe:
                 y_min, y_max = min(all_y) - 1, max(all_y) + 1
                 st.session_state.graph_limits = (x_min, x_max, y_min, y_max)
 
-    # Erstellen einer Tabelle für die Gelenke
+
+
+
+
+
+
+    #interaktive Tabelle für Gelenke
     if "gelenke" in st.session_state and st.session_state.gelenke:
-        gelenke_df = pd.DataFrame([[g.id, g.x, g.y,g.ist_statisch, g.ist_antrieb] for g in st.session_state.gelenke], columns=["ID", "X", "Y", "Statisch", "Antrieb"])
-        st.subheader("Gelenke (NumPy):")
-        st.dataframe(gelenke_df)
+        gelenke_df = pd.DataFrame([[g.id, g.x, g.y, g.ist_statisch, g.ist_antrieb] for g in st.session_state.gelenke], 
+            columns=["ID", "X", "Y", "Statisch", "Antrieb"])
+    else:
+    # Leere Tabelle, wenn keine Gelenke existieren
+        gelenke_df = pd.DataFrame(columns=["ID", "X", "Y", "Statisch", "Antrieb"])
 
-    # Erstellen einer Tabelle für die Glieder
+    # Immer eine bearbeitbare Tabelle anzeigen
+    st.subheader("Gelenke bearbeiten:")
+    edited_gelenke = st.data_editor(gelenke_df, num_rows="dynamic", key="gelenke_editor")
+
+    # Änderungen speichern
+    if st.button("Änderungen speichern"):
+        if not edited_gelenke.empty:
+            for i, row in edited_gelenke.iterrows():
+                if i < len(st.session_state.gelenke):  # Bestehendes Gelenk aktualisieren
+                    st.session_state.gelenke[i].x = row["X"]
+                    st.session_state.gelenke[i].y = row["Y"]
+                    st.session_state.gelenke[i].ist_statisch = row["Statisch"]
+                    st.session_state.gelenke[i].ist_antrieb = row["Antrieb"]
+                else:  # Neues Gelenk hinzufügen
+                    neues_gelenk = Gelenk(float(row["X"]), float(row["Y"]), row["Statisch"], row["Antrieb"])
+                    st.session_state.gelenke.append(neues_gelenk)
+
+            # Datenbank aktualisieren
+            if st.session_state.aktiver_mechanismus:
+                db.table("mechanismen").update({"gelenke": [g.__dict__ for g in st.session_state.gelenke]}, 
+                    where("name") == st.session_state.aktiver_mechanismus)
+            st.success("Gelenk-Daten gespeichert!")
+
+
+
+
+    #interaktive Tabelle für Glieder
     if "glieder" in st.session_state and st.session_state.glieder:
-        glieder_df = pd.DataFrame([[i+1, g.start_id, g.ende_id] for i, g in enumerate(st.session_state.glieder)], columns=["ID", "Startgelenk", "Endgelenk"])
-        st.subheader("Glieder (NumPy):")
-        st.dataframe(glieder_df)
+        glieder_df = pd.DataFrame([[i+1, g.start_id, g.ende_id] for i, g in enumerate(st.session_state.glieder)], 
+            columns=["ID", "Startgelenk", "Endgelenk"])
+    else:
+        glieder_df = pd.DataFrame(columns=["ID", "Startgelenk", "Endgelenk"])
 
+    st.subheader("Glieder bearbeiten:")
+    edited_glieder = st.data_editor(glieder_df, num_rows="dynamic", key="glieder_editor")
+
+    if st.button("Änderungen speichern (Glieder)"):
+        if not edited_glieder.empty:
+            neue_glieder = []
+            for i, row in edited_glieder.iterrows():
+                neues_glied = Glied(row["Startgelenk"], row["Endgelenk"])
+                neue_glieder.append(neues_glied)
+
+            st.session_state.glieder = neue_glieder  # Aktualisieren
+            if st.session_state.aktiver_mechanismus:
+                db.table("mechanismen").update({"glieder": [g.__dict__ for g in neue_glieder]}, 
+                where("name") == st.session_state.aktiver_mechanismus)
+            st.success("Glied-Daten gespeichert!")
 
 
 
