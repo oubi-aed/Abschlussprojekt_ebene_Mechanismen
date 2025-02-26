@@ -223,8 +223,8 @@ with eingabe:
             all_y = [g.y for g in st.session_state.mechanismus.gelenke]
 
             if all_x and all_y:
-                x_min, x_max = min(all_x) - 1, max(all_x) + 1
-                y_min, y_max = min(all_y) - 1, max(all_y) + 1
+                x_min, x_max = min(all_x) - 40, max(all_x) + 40
+                y_min, y_max = min(all_y) - 40, max(all_y) + 40
                 st.session_state.graph_limits = (x_min, x_max, y_min, y_max)
 
     # Download-Button für Bahnkurven CSV
@@ -233,7 +233,7 @@ with eingabe:
     if os.path.exists(bahnkurven_datei):
         with open(bahnkurven_datei, "rb") as file:
             st.download_button(
-                label="📥 Bahnkurven herunterladen",
+                label="Bahnkurven herunterladen",
                 data=file,
                 file_name="bahnkurve.csv",
                 mime="text/csv"
