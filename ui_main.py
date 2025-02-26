@@ -289,6 +289,7 @@ with ausgabe:
     fig, ax = plt.subplots()
     ax.set_xlabel("X-Achse")
     ax.set_ylabel("Y-Achse")
+
     if not st.session_state.simulationsergebnisse:                  
         if "gelenke" in st.session_state and st.session_state.gelenke:
             for gelenk in st.session_state.gelenke:
@@ -305,8 +306,8 @@ with ausgabe:
                 start_gelenk = next(g for g in st.session_state.gelenke if g.id == glied.start_id)
                 ende_gelenk = next(g for g in st.session_state.gelenke if g.id == glied.ende_id)
 
-            # Linie zwischen den Gelenken zeichnen
-            ax.plot([start_gelenk.x, ende_gelenk.x], 
+                # Linie zwischen den Gelenken zeichnen
+                ax.plot([start_gelenk.x, ende_gelenk.x], 
                     [start_gelenk.y, ende_gelenk.y], 
                     color="black", linewidth=2)
 
