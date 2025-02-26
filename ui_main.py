@@ -236,10 +236,30 @@ with ausgabe:
     st.header("Animation der Simulation")
 
     x_min, x_max, y_min, y_max = st.session_state.graph_limits or (-10, 10, -10, 10)
-
     fig, ax = plt.subplots()
     ax.set_xlabel("X-Achse")
     ax.set_ylabel("Y-Achse")
+                      
+    if "gelenke" in st.session_state and st.session_state.gelenke:
+        for gelenk in st.session_state.gelenke:
+            if gelenk.ist_antrieb == False and gelenk.ist_statisch == False:
+                color = "red"
+            else:
+                color = "blue"
+            ax.scatter(gelenk.x, gelenk.y, color=color, s=100, label=f"Gelenk {gelenk.id}")
+            ax.text(gelenk.x + 0.1, gelenk.y + 0.1, f"{gelenk.id}", fontsize=12)
+
+    for glied in st.session_state.glieder:
+    # Start- und Endgelenk aus der Liste suchen
+        start_gelenk = next(g for g in st.session_state.gelenke if g.id == glied.start_id)
+        ende_gelenk = next(g for g in st.session_state.gelenke if g.id == glied.ende_id)
+
+    # Linie zwischen den Gelenken zeichnen
+    ax.plot([start_gelenk.x, ende_gelenk.x], 
+            [start_gelenk.y, ende_gelenk.y], 
+            color="black", linewidth=2)
+
+    st.pyplot(fig)   
 
     #Falls eine Simulation existiert, starte die Animation
     if st.session_state.simulationsergebnisse:
