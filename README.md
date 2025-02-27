@@ -1,6 +1,5 @@
 # Abschlussprojekt_ebene_Mechanismen
 Eine streamlitanwendung mit welcher beliebige ebene Mechanismen ( mit gewissen Einschränkungen) definiert und deren Kinematik simuliert werden
-# Abschlussprojekt: Ebene Mechanismen
 
 ## Projektbeschreibung
 Dieses Projekt ist eine Simulation für ebene Mechanismen die aus Gelenken und Gliedern bestehen. Die Mechanismen können definiert, validiert und simuliert werden. Eine Web-UI (mit Streamlit) ermöglicht es, Mechanismen interaktiv zu erstellen und ihre Kinematik zu analysieren.
