@@ -1,1 +1,329 @@
-{"mechanismen": {"1": {"id": 1, "name": "Strandbeest", "gelenke": [{"id": 1, "x": 0.0, "y": 0.0, "ist_statisch": false, "ist_antrieb": false}, {"id": 2, "x": -38.0, "y": 0.0, "ist_statisch": true, "ist_antrieb": false}, {"id": 3, "x": -29.23, "y": 40.56, "ist_statisch": false, "ist_antrieb": false}, {"id": 4, "x": -76.56, "y": 11.0, "ist_statisch": false, "ist_antrieb": false}, {"id": 5, "x": -49.1, "y": -37.7, "ist_statisch": false, "ist_antrieb": false}, {"id": 6, "x": -84.38, "y": -27.61, "ist_statisch": false, "ist_antrieb": false}, {"id": 7, "x": -54.95, "y": -86.35, "ist_statisch": false, "ist_antrieb": false}, {"id": 8, "x": 10.0, "y": 5.0, "ist_statisch": true, "ist_antrieb": true}], "glieder": [{"id": 12, "start_id": 8, "ende_id": 1, "ist_kurbel": false}, {"id": 13, "start_id": 1, "ende_id": 3, "ist_kurbel": false}, {"id": 14, "start_id": 3, "ende_id": 2, "ist_kurbel": false}, {"id": 15, "start_id": 5, "ende_id": 1, "ist_kurbel": false}, {"id": 16, "start_id": 3, "ende_id": 4, "ist_kurbel": false}, {"id": 17, "start_id": 4, "ende_id": 2, "ist_kurbel": false}, {"id": 18, "start_id": 4, "ende_id": 6, "ist_kurbel": false}, {"id": 19, "start_id": 6, "ende_id": 5, "ist_kurbel": false}, {"id": 20, "start_id": 2, "ende_id": 5, "ist_kurbel": false}, {"id": 21, "start_id": 5, "ende_id": 7, "ist_kurbel": false}, {"id": 22, "start_id": 6, "ende_id": 7, "ist_kurbel": false}], "antrieb": null, "statik": []}, "2": {"id": 1, "name": "Test 1", "gelenke": [{"id": 1, "x": 1.0, "y": 1.0, "ist_statisch": true, "ist_antrieb": true}, {"id": 2, "x": 2.0, "y": 2.0, "ist_statisch": false, "ist_antrieb": false}, {"id": 3, "x": 6.0, "y": 6.0, "ist_statisch": false, "ist_antrieb": false}, {"id": 4, "x": 5.0, "y": 0.0, "ist_statisch": true, "ist_antrieb": false}], "glieder": [{"id": 1, "start_id": 1, "ende_id": 2, "ist_kurbel": true}, {"id": 2, "start_id": 2, "ende_id": 3, "ist_kurbel": false}, {"id": 3, "start_id": 3, "ende_id": 4, "ist_kurbel": false}], "antrieb": 1, "statik": [1, 4]}, "3": {"id": 3, "name": "Test 2", "gelenke": [], "glieder": [], "antrieb": null, "statik": []}}, "Gelenke": {"1": {"id": 1, "x": 1.0, "y": 1.0, "ist_statisch": true, "ist_antrieb": true}, "2": {"id": 2, "x": 2.0, "y": 2.0, "ist_statisch": false, "ist_antrieb": false}, "3": {"id": 3, "x": 3.0, "y": 0.0, "ist_statisch": true, "ist_antrieb": false}, "4": {"id": 4, "x": 5.0, "y": 0.0, "ist_statisch": true, "ist_antrieb": false}, "5": {"id": 5, "x": 49.1, "y": 37.7, "ist_statisch": false, "ist_antrieb": false}, "6": {"id": 6, "x": 84.38, "y": 27.61, "ist_statisch": false, "ist_antrieb": false}, "7": {"id": 7, "x": 54.95, "y": 86.35, "ist_statisch": false, "ist_antrieb": false}, "8": {"id": 8, "x": 12.81, "y": 7.8, "ist_statisch": false, "ist_antrieb": false}}, "glieder": {"1": {"id": 1, "start_id": 1, "ende_id": 2, "ist_kurbel": false}, "2": {"id": 2, "start_id": 2, "ende_id": 3, "ist_kurbel": false}, "3": {"id": 3, "start_id": 3, "ende_id": 4, "ist_kurbel": false}, "4": {"id": 4, "start_id": 2, "ende_id": 1, "ist_kurbel": false}, "5": {"id": 5, "start_id": 3, "ende_id": 4, "ist_kurbel": false}, "6": {"id": 6, "start_id": 4, "ende_id": 2, "ist_kurbel": false}, "7": {"id": 7, "start_id": 4, "ende_id": 6, "ist_kurbel": false}, "8": {"id": 8, "start_id": 6, "ende_id": 5, "ist_kurbel": false}, "9": {"id": 9, "start_id": 2, "ende_id": 5, "ist_kurbel": false}, "10": {"id": 10, "start_id": 5, "ende_id": 7, "ist_kurbel": false}, "11": {"id": 11, "start_id": 6, "ende_id": 7, "ist_kurbel": false}}}
+{
+    "mechanismen": {
+        "1": {
+            "id": 1,
+            "name": "Strandbeest",
+            "gelenke": [
+                {
+                    "id": 1,
+                    "x": 0.0,
+                    "y": 0.0,
+                    "ist_statisch": false,
+                    "ist_antrieb": false
+                },
+                {
+                    "id": 2,
+                    "x": -38.0,
+                    "y": 0.0,
+                    "ist_statisch": true,
+                    "ist_antrieb": false
+                },
+                {
+                    "id": 3,
+                    "x": -29.23,
+                    "y": 40.56,
+                    "ist_statisch": false,
+                    "ist_antrieb": false
+                },
+                {
+                    "id": 4,
+                    "x": -76.56,
+                    "y": 11.0,
+                    "ist_statisch": false,
+                    "ist_antrieb": false
+                },
+                {
+                    "id": 5,
+                    "x": -49.1,
+                    "y": -37.7,
+                    "ist_statisch": false,
+                    "ist_antrieb": false
+                },
+                {
+                    "id": 6,
+                    "x": -84.38,
+                    "y": -27.61,
+                    "ist_statisch": false,
+                    "ist_antrieb": false
+                },
+                {
+                    "id": 7,
+                    "x": -54.95,
+                    "y": -86.35,
+                    "ist_statisch": false,
+                    "ist_antrieb": false
+                },
+                {
+                    "id": 8,
+                    "x": 10.0,
+                    "y": 5.0,
+                    "ist_statisch": true,
+                    "ist_antrieb": true
+                }
+            ],
+            "glieder": [
+                {
+                    "id": 12,
+                    "start_id": 8,
+                    "ende_id": 1,
+                    "ist_kurbel": false
+                },
+                {
+                    "id": 13,
+                    "start_id": 1,
+                    "ende_id": 3,
+                    "ist_kurbel": false
+                },
+                {
+                    "id": 14,
+                    "start_id": 3,
+                    "ende_id": 2,
+                    "ist_kurbel": false
+                },
+                {
+                    "id": 15,
+                    "start_id": 5,
+                    "ende_id": 1,
+                    "ist_kurbel": false
+                },
+                {
+                    "id": 16,
+                    "start_id": 3,
+                    "ende_id": 4,
+                    "ist_kurbel": false
+                },
+                {
+                    "id": 17,
+                    "start_id": 4,
+                    "ende_id": 2,
+                    "ist_kurbel": false
+                },
+                {
+                    "id": 18,
+                    "start_id": 4,
+                    "ende_id": 6,
+                    "ist_kurbel": false
+                },
+                {
+                    "id": 19,
+                    "start_id": 6,
+                    "ende_id": 5,
+                    "ist_kurbel": false
+                },
+                {
+                    "id": 20,
+                    "start_id": 2,
+                    "ende_id": 5,
+                    "ist_kurbel": false
+                },
+                {
+                    "id": 21,
+                    "start_id": 5,
+                    "ende_id": 7,
+                    "ist_kurbel": false
+                },
+                {
+                    "id": 22,
+                    "start_id": 6,
+                    "ende_id": 7,
+                    "ist_kurbel": false
+                }
+            ],
+            "antrieb": null,
+            "statik": []
+        },
+        "2": {
+            "id": 1,
+            "name": "Test 1",
+            "gelenke": [
+                {
+                    "id": 1,
+                    "x": 1.0,
+                    "y": 1.0,
+                    "ist_statisch": true,
+                    "ist_antrieb": true
+                },
+                {
+                    "id": 2,
+                    "x": 2.0,
+                    "y": 2.0,
+                    "ist_statisch": false,
+                    "ist_antrieb": false
+                },
+                {
+                    "id": 3,
+                    "x": 6.0,
+                    "y": 6.0,
+                    "ist_statisch": false,
+                    "ist_antrieb": false
+                },
+                {
+                    "id": 4,
+                    "x": 5.0,
+                    "y": 0.0,
+                    "ist_statisch": true,
+                    "ist_antrieb": false
+                }
+            ],
+            "glieder": [
+                {
+                    "id": 1,
+                    "start_id": 1,
+                    "ende_id": 2,
+                    "ist_kurbel": true
+                },
+                {
+                    "id": 2,
+                    "start_id": 2,
+                    "ende_id": 3,
+                    "ist_kurbel": false
+                },
+                {
+                    "id": 3,
+                    "start_id": 3,
+                    "ende_id": 4,
+                    "ist_kurbel": false
+                }
+            ],
+            "antrieb": 1,
+            "statik": [
+                1,
+                4
+            ]
+        },
+        "3": {
+            "id": 3,
+            "name": "Test 2",
+            "gelenke": [],
+            "glieder": [],
+            "antrieb": null,
+            "statik": []
+        }
+    },
+    "Gelenke": {
+        "1": {
+            "id": 1,
+            "x": 1.0,
+            "y": 1.0,
+            "ist_statisch": true,
+            "ist_antrieb": true
+        },
+        "2": {
+            "id": 2,
+            "x": 2.0,
+            "y": 2.0,
+            "ist_statisch": false,
+            "ist_antrieb": false
+        },
+        "3": {
+            "id": 3,
+            "x": 3.0,
+            "y": 0.0,
+            "ist_statisch": true,
+            "ist_antrieb": false
+        },
+        "4": {
+            "id": 4,
+            "x": 5.0,
+            "y": 0.0,
+            "ist_statisch": true,
+            "ist_antrieb": false
+        },
+        "5": {
+            "id": 5,
+            "x": 49.1,
+            "y": 37.7,
+            "ist_statisch": false,
+            "ist_antrieb": false
+        },
+        "6": {
+            "id": 6,
+            "x": 84.38,
+            "y": 27.61,
+            "ist_statisch": false,
+            "ist_antrieb": false
+        },
+        "7": {
+            "id": 7,
+            "x": 54.95,
+            "y": 86.35,
+            "ist_statisch": false,
+            "ist_antrieb": false
+        },
+        "8": {
+            "id": 8,
+            "x": 12.81,
+            "y": 7.8,
+            "ist_statisch": false,
+            "ist_antrieb": false
+        }
+    },
+    "glieder": {
+        "1": {
+            "id": 1,
+            "start_id": 1,
+            "ende_id": 2,
+            "ist_kurbel": false
+        },
+        "2": {
+            "id": 2,
+            "start_id": 2,
+            "ende_id": 3,
+            "ist_kurbel": false
+        },
+        "3": {
+            "id": 3,
+            "start_id": 3,
+            "ende_id": 4,
+            "ist_kurbel": false
+        },
+        "4": {
+            "id": 4,
+            "start_id": 2,
+            "ende_id": 1,
+            "ist_kurbel": false
+        },
+        "5": {
+            "id": 5,
+            "start_id": 3,
+            "ende_id": 4,
+            "ist_kurbel": false
+        },
+        "6": {
+            "id": 6,
+            "start_id": 4,
+            "ende_id": 2,
+            "ist_kurbel": false
+        },
+        "7": {
+            "id": 7,
+            "start_id": 4,
+            "ende_id": 6,
+            "ist_kurbel": false
+        },
+        "8": {
+            "id": 8,
+            "start_id": 6,
+            "ende_id": 5,
+            "ist_kurbel": false
+        },
+        "9": {
+            "id": 9,
+            "start_id": 2,
+            "ende_id": 5,
+            "ist_kurbel": false
+        },
+        "10": {
+            "id": 10,
+            "start_id": 5,
+            "ende_id": 7,
+            "ist_kurbel": false
+        },
+        "11": {
+            "id": 11,
+            "start_id": 6,
+            "ende_id": 7,
+            "ist_kurbel": false
+        }
+    }
+}

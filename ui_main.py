@@ -218,25 +218,25 @@ with eingabe:
         st.session_state.simulation_start = True
         st.session_state.mechanismus = Mechanismus(st.session_state.aktiver_mechanismus, db, st.session_state.glieder, st.session_state.gelenke)
         if st.session_state.mechanismus:
-            sim = Simulation(st.session_state.mechanismus)
-            sim.simuliere_mechanismus()
-            sim.export_bahnkurve()
-            st.session_state.simulationsergebnisse = sim.simulationsergebnisse
-            st.session_state.bahnkurve = sim.bahnkurve
-            st.success("Simulation abgeschlossen!")
-            
-            
-            
+            if not st.session_state.mechanismus.ist_valide():
+                st.error("Mechanismus ist ungültig! Simulation abgebrochen.")  
+            else:
+                sim = Simulation(st.session_state.mechanismus)
+                sim.simuliere_mechanismus()
+                sim.export_bahnkurve()
+                st.session_state.simulationsergebnisse = sim.simulationsergebnisse
+                st.session_state.bahnkurve = sim.bahnkurve
+                st.success("Simulation abgeschlossen!")
+                
+                # Skalierung berechnen & fixieren
+                all_x = [g.x for g in st.session_state.mechanismus.gelenke]
+                all_y = [g.y for g in st.session_state.mechanismus.gelenke]
 
-            # Skalierung berechnen & fixieren
-            all_x = [g.x for g in st.session_state.mechanismus.gelenke]
-            all_y = [g.y for g in st.session_state.mechanismus.gelenke]
-
-            if all_x and all_y:
-                x_min, x_max = min(all_x) - 40, max(all_x) + 40
-                y_min, y_max = min(all_y) - 40, max(all_y) + 40
-                st.session_state.graph_limits = (x_min, x_max, y_min, y_max)
-            sim.export_gif(st.session_state.graph_limits)
+                if all_x and all_y:
+                    x_min, x_max = min(all_x) - 40, max(all_x) + 40
+                    y_min, y_max = min(all_y) - 40, max(all_y) + 40
+                    st.session_state.graph_limits = (x_min, x_max, y_min, y_max)
+                sim.export_gif(st.session_state.graph_limits)
             
                 
 

@@ -1,6 +1,8 @@
 from tinydb import TinyDB, Query
 from Gelenk import Gelenk
 from Glied import Glied
+import networkx as nx
+
 
 class Mechanismus:
     id_counter = 1
@@ -20,7 +22,34 @@ class Mechanismus:
         # Automatische Erkennung von Antrieb und statischen Gelenken
         self.set_antrieb()
         self.set_statische_gelenke()
+        
 
+    def ist_valide(self):
+        """Einfache Validierung des Mechanismus."""
+
+        statische_gelenke = [g for g in self.gelenke if g.ist_statisch]
+        if len(statische_gelenke) == 0:
+            print("Fehler: Es gibt kein statisches Gelenk. Mindestens eines muss fixiert sein.")
+            return False
+
+        antriebsgelenke = [g for g in self.gelenke if g.ist_antrieb]
+        if len(antriebsgelenke) != 1:
+            print(f"Fehler: Es gibt {len(antriebsgelenke)} Antriebsgelenke. Es sollte genau eines sein.")
+            return False
+
+        verbundene_gelenke = set()
+        for glied in self.glieder:
+            verbundene_gelenke.add(glied.start_id)
+            verbundene_gelenke.add(glied.ende_id)
+
+        alle_gelenke = {g.id for g in self.gelenke}
+        if not alle_gelenke.issubset(verbundene_gelenke):
+            print("Fehler: Es gibt isolierte Gelenke, die mit keinem Glied verbunden sind.")
+            return False
+
+        print("Der Mechanismus ist gültig!")
+        return True
+    
     def add_gelenk(self, gelenk: Gelenk):
         """Fügt ein Gelenk hinzu."""
         self.gelenke.append(gelenk)
