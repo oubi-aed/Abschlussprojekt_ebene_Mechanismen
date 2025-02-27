@@ -1,7 +1,6 @@
 from tinydb import TinyDB, Query
 from Gelenk import Gelenk
 from Glied import Glied
-import networkx as nx
 
 
 class Mechanismus:
