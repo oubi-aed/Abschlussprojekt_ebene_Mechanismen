@@ -29,6 +29,12 @@ In diesem Projekt haben wir folgende Funktionen implementiert:
 
 ---
 
+## Streamlit Deploy
+
+https://ebenenmechanismus.streamlit.app/
+
+---
+
 ## Beweis am Strandbeest
 
 Zur Validierung der Implementierung wurde das Prinzip des **Strandbeest-Mechanismus** getestet. Dabei wurde ein Mechanismus nach den Konstruktionsprinzipien von Theo Jansen nachgebildet. Durch die Simulation konnte nachgewiesen werden, dass sich der Mechanismus entsprechend der theoretischen Berechnungen bewegt.
