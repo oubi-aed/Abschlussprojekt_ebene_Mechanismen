@@ -22,6 +22,10 @@ In diesem Projekt haben wir folgende Funktionen implementiert:
 
 ## Visualisierungen und UI
 
+- Foto und Video der UI sowie auch der Visualisierung eines Mechanismus
+
+![UI](https://github.com/oubi-aed/Abschlussprojekt_ebene_Mechanismen/blob/main/images/UI.png)
+
 [Video ansehen](https://github.com/oubi-aed/Abschlussprojekt_ebene_Mechanismen/blob/main/images/Aufzeichnung_Strandbeest.mp4)
 
 ---
