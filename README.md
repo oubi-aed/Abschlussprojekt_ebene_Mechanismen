@@ -20,15 +20,18 @@ In diesem Projekt haben wir folgende Funktionen implementiert:
 
 ---
 
-## Bilder und Visualisierungen
+## Visualisierungen und UI
 
-
+[Video ansehen](https://github.com/oubi-aed/Abschlussprojekt_ebene_Mechanismen/blob/main/images/Aufzeichnung_Strandbeest.mp4)
 
 ---
 
 ## Beweis am Strandbeest
 
 Zur Validierung der Implementierung wurde das Prinzip des **Strandbeest-Mechanismus** getestet. Dabei wurde ein Mechanismus nach den Konstruktionsprinzipien von Theo Jansen nachgebildet. Durch die Simulation konnte nachgewiesen werden, dass sich der Mechanismus entsprechend der theoretischen Berechnungen bewegt.
+
+![Animation](https://github.com/oubi-aed/Abschlussprojekt_ebene_Mechanismen/blob/main/images/Gif.gif)
+
 
 Die Simulationsergebnisse zeigen, dass die Gelenke des Strandbeest-Mechanismus sich synchron bewegen und eine zyklische Laufbewegung ermöglichen. Dies bestätigt die korrekte Umsetzung der Mechanik in unserem Modell.
 
