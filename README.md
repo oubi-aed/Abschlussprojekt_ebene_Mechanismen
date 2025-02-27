@@ -38,6 +38,20 @@ Zur Validierung der Implementierung wurde das Prinzip des **Strandbeest-Mechanis
 
 Die Simulationsergebnisse zeigen, dass die Gelenke des Strandbeest-Mechanismus sich synchron bewegen und eine zyklische Laufbewegung ermöglichen. Dies bestätigt die korrekte Umsetzung der Mechanik in unserem Modell.
 
+---
+
+## UML-Diagramm
+
+![UI](https://github.com/oubi-aed/Abschlussprojekt_ebene_Mechanismen/blob/main/images/uml2.png)
+
+---
+
+## Quellen
+
+- [Geogebra Simulation des Strandbeest](https://www.geogebra.org/m/dc6hpqkj)
+
+---
+
 ## Installation
 
 ### Voraussetzungen
